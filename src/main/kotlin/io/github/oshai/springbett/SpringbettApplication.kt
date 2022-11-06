@@ -17,7 +17,10 @@ import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.data.annotation.Id
 import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.awaitBody
 import org.springframework.web.reactive.function.server.bodyAndAwait
+import org.springframework.web.reactive.function.server.bodyToFlow
+import org.springframework.web.reactive.function.server.bodyValueAndAwait
 import org.springframework.web.reactive.function.server.coRouter
 import java.time.Instant
 import java.time.ZonedDateTime
@@ -29,6 +32,12 @@ class SpringbettApplication {
 	fun http(sr: StadiumRepository) = coRouter {
 		GET("/stadiums") {
 			ServerResponse.ok().bodyAndAwait(sr.findAll())
+		}
+		POST("/stadiums/create") {
+			ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody()))
+		}
+		DELETE("/stadiums/{id}/delete") {
+			ServerResponse.ok().bodyValueAndAwait(sr.deleteById(it.pathVariable("id").toInt()))
 		}
 	}
 }
