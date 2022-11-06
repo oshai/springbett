@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.server.coRouter
 class SpringbettApplication {
 
     @Bean
-    fun http(sr: StadiumRepository) = coRouter {
+    fun stadiums(sr: StadiumRepository) = coRouter {
         GET("/stadiums") {
             ServerResponse.ok().bodyAndAwait(sr.findAll())
         }
@@ -32,10 +32,38 @@ class SpringbettApplication {
             ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody()))
         }
         PUT("/stadiums/{id}") {
-            ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody<Stadium>().copy(id = it.pathVariable("id").toInt())))
+            ServerResponse.ok()
+                .bodyValueAndAwait(sr.save(it.awaitBody<Stadium>().copy(id = it.pathVariable("id").toInt())))
         }
         DELETE("/stadiums/{id}") {
             ServerResponse.ok().bodyValueAndAwait(sr.deleteById(it.pathVariable("id").toInt()))
+        }
+    }
+    @Bean
+    fun teams(tr: TeamRepository) = coRouter {
+        GET("/teams") {
+            ServerResponse.ok().bodyAndAwait(tr.findAll())
+        }
+        GET("/teams/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(
+                tr.findById(it.pathVariable("id").toInt()) ?: throw Exception(
+                    "could not find team ${
+                        it.pathVariable(
+                            "id"
+                        )
+                    }"
+                )
+            )
+        }
+        POST("/teams/create") {
+            ServerResponse.ok().bodyValueAndAwait(tr.save(it.awaitBody()))
+        }
+        PUT("/teams/{id}") {
+            ServerResponse.ok()
+                .bodyValueAndAwait(tr.save(it.awaitBody<Team>().copy(id = it.pathVariable("id").toInt())))
+        }
+        DELETE("/teams/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(tr.deleteById(it.pathVariable("id").toInt()))
         }
     }
 }
