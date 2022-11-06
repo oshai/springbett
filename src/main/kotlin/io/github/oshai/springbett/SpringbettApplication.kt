@@ -46,4 +46,4 @@ fun main(args: Array<String>) {
 
 interface StadiumRepository : CoroutineCrudRepository<Stadium, Int>
 
-data class Stadium(@Id val id: Int? = null, val name: String, val city: String, val capacity: Int)
+data class Stadium(@Id val id: Int? = null, val name: String, val shortName: String, val city: String, val capacity: Int)

@@ -13,7 +13,7 @@ class SpringbettApplicationTests(@Autowired val sr: StadiumRepository) {
 
 	@Test
 	fun contextLoads() = runBlocking {
-		sr.save(Stadium(name = "Al Bayt Stadium", capacity = 60000, city =  "Al Khor"))
+		sr.save(Stadium(name = "Al Bayt Stadium", capacity = 60000, city =  "Al Khor", shortName = "bayt"))
 		val stadiums = sr.findAll()
 		Assertions.assertEquals(1, stadiums.count())
 		Assertions.assertNotNull(stadiums.last().id)
