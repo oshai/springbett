@@ -87,7 +87,7 @@ class SpringbettApplication {
         }
         PUT("/players/{id}") {
             ServerResponse.ok()
-                .bodyValueAndAwait(pr.save(it.awaitBody<Team>().copy(id = it.pathVariable("id").toInt())))
+                .bodyValueAndAwait(pr.save(it.awaitBody<Player>().copy(id = it.pathVariable("id").toInt())))
         }
         DELETE("/players/{id}") {
             ServerResponse.ok().bodyValueAndAwait(pr.deleteById(it.pathVariable("id").toInt()))
