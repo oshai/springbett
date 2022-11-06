@@ -12,3 +12,7 @@ interface TeamRepository : CoroutineCrudRepository<Team, Int>
 
 data class Team(@Id val id: Int? = null, val name: String, val shortName: String)
 
+interface PlayerRepository : CoroutineCrudRepository<Team, Int>
+
+data class Player(@Id val id: Int? = null, val name: String, val shortName: String)
+

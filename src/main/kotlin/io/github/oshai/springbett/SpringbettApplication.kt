@@ -66,6 +66,33 @@ class SpringbettApplication {
             ServerResponse.ok().bodyValueAndAwait(tr.deleteById(it.pathVariable("id").toInt()))
         }
     }
+    @Bean
+    fun players(pr: PlayerRepository) = coRouter {
+        GET("/players") {
+            ServerResponse.ok().bodyAndAwait(pr.findAll())
+        }
+        GET("/players/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(
+                pr.findById(it.pathVariable("id").toInt()) ?: throw Exception(
+                    "could not find player ${
+                        it.pathVariable(
+                            "id"
+                        )
+                    }"
+                )
+            )
+        }
+        POST("/players/create") {
+            ServerResponse.ok().bodyValueAndAwait(pr.save(it.awaitBody()))
+        }
+        PUT("/players/{id}") {
+            ServerResponse.ok()
+                .bodyValueAndAwait(pr.save(it.awaitBody<Team>().copy(id = it.pathVariable("id").toInt())))
+        }
+        DELETE("/players/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(pr.deleteById(it.pathVariable("id").toInt()))
+        }
+    }
 }
 
 fun main(args: Array<String>) {
