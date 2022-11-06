@@ -14,22 +14,33 @@ import org.springframework.web.reactive.function.server.coRouter
 @SpringBootApplication
 class SpringbettApplication {
 
-	@Bean
-	fun http(sr: StadiumRepository) = coRouter {
-		GET("/stadiums") {
-			ServerResponse.ok().bodyAndAwait(sr.findAll())
-		}
-		POST("/stadiums/create") {
-			ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody()))
-		}
-		DELETE("/stadiums/{id}/delete") {
-			ServerResponse.ok().bodyValueAndAwait(sr.deleteById(it.pathVariable("id").toInt()))
-		}
-	}
+    @Bean
+    fun http(sr: StadiumRepository) = coRouter {
+        GET("/stadiums") {
+            ServerResponse.ok().bodyAndAwait(sr.findAll())
+        }
+        GET("/stadiums/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(
+                sr.findById(it.pathVariable("id").toInt()) ?: throw Exception(
+                    "could not find stadium ${
+                        it.pathVariable(
+                            "id"
+                        )
+                    }"
+                )
+            )
+        }
+        POST("/stadiums/create") {
+            ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody()))
+        }
+        DELETE("/stadiums/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(sr.deleteById(it.pathVariable("id").toInt()))
+        }
+    }
 }
 
 fun main(args: Array<String>) {
-	runApplication<SpringbettApplication>(*args)
+    runApplication<SpringbettApplication>(*args)
 }
 
 
