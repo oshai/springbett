@@ -31,6 +31,9 @@ class SpringbettApplication {
         POST("/stadiums/create") {
             ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody()))
         }
+        PUT("/stadiums/{id}") {
+            ServerResponse.ok().bodyValueAndAwait(sr.save(it.awaitBody<Stadium>().copy(id = it.pathVariable("id").toInt())))
+        }
         DELETE("/stadiums/{id}") {
             ServerResponse.ok().bodyValueAndAwait(sr.deleteById(it.pathVariable("id").toInt()))
         }
