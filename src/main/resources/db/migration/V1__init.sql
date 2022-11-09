@@ -1,3 +1,6 @@
+
+
+
 create table if not exists stadium
 (
     id   serial primary key,
@@ -20,4 +23,3 @@ create table if not exists player
     name varchar(255) not null,
     short_name varchar(255) not null unique
 ) ;
-
