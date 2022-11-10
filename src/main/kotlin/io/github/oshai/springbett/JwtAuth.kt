@@ -65,6 +65,7 @@ class SecurityConfig(
             .authorizeRequests()
             .antMatchers("/api/account/externalLogins").permitAll()
             .antMatchers("/api/account/userInfo").permitAll()
+            .antMatchers("/api/account/logout").permitAll()
             .antMatchers("/api/**").authenticated()
             .anyRequest().permitAll() // all other requests shouldn't be authenticated
             .and().exceptionHandling() // make sure we use stateless session; session won't be used to
@@ -144,6 +145,14 @@ class JwtAuthenticationController(
                 roles = user.roles,
             )
         )
+    }
+
+    @RequestMapping(
+        value = ["/api/account/logout"],
+        method = [RequestMethod.POST]
+    )
+    fun logout(): ResponseEntity<*> {
+        return ResponseEntity.ok<Any>("{}")
     }
 
     @Throws(Exception::class)
