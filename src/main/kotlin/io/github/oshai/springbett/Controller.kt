@@ -15,7 +15,8 @@ class NopController() {
     @GetMapping("/api/generalbets/cansubmitbets/") fun canSubmitBets() = true
     @GetMapping("/api/generalbets/has-bet/{user}") fun hasBet() = false
     @GetMapping("/api/games") fun games() = listOf<Any>()
-    @GetMapping("/api/users/table") fun users() = listOf<Any>()
+    @GetMapping("/api/games/open") fun openGames() = listOf<Any>()
+    @GetMapping("/api/generalbets") fun gb() = listOf<Any>()
 }
 @RestController
 class StadiumController(val service: StadiumService) {
@@ -88,5 +89,25 @@ class PlayerController(val service: PlayerService) {
 
     @DeleteMapping("/api/$entityName/{id}")
     fun delete(@RequestParam("id") id: Int) = service.delete(id)
+
+}
+
+@RestController
+class UserStatsController(val service: UserStatsService) {
+    companion object {
+        private const val entityName = "users"
+    }
+
+    @GetMapping("/api/$entityName")
+    fun getAll() = service.getAll()
+
+    @GetMapping("/api/$entityName/table")
+    fun getTable() = service.getTable()
+
+    @GetMapping("/api/$entityName/{username}")
+    fun getUser(username: String) = service.getUserStats(username)
+
+    @GetMapping("/api/$entityName/me")
+    fun getMe(username: String) = service.getUserStats(username)
 
 }

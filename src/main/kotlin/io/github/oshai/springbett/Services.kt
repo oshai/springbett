@@ -111,3 +111,52 @@ class UserService(val repository: UserRepository) {
         repository.deleteById(id)
     }
 }
+
+@Service
+class UserStatsService(val users: UserService) {
+
+    fun getAll(): List<UserStatsModel> {
+        return listOf() // repository.findAll().toList()
+    }
+
+    fun getTable(): List<UserStatsModel> {
+        return listOf()
+    }
+
+    fun getUserStats(username: String): UserStatsModel {
+        val user = users.getOne(username)
+        return UserStatsModel(
+            username = username,
+            name = "${user.firstName} ${user.lastName}",
+            id = user.id.toString(),
+            email = user.email,
+            isAdmin = user.isAdmin,
+            points = 0,
+            yesterdayPoints = 0,
+            place = 0,
+            placeDiff = 0,
+            result = 0,
+            marks = 0,
+            totalMarks = 0,
+        )
+    }
+
+
+}
+
+data class UserStatsModel(
+    val username: String,
+    val name: String,
+    val id: String,
+    val email: String,
+    val isAdmin: Boolean,
+    val points: Int,
+    val yesterdayPoints: Int,
+    val place: Int,
+    val placeDiff: Int,
+    val result: Int,
+    val marks: Int,
+    val totalMarks: Int,
+    //val tournamentBet: Int,
+
+)
