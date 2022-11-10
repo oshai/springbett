@@ -8,6 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+
+
+@RestController
+class NopController() {
+    @GetMapping("/api/generalbets/cansubmitbets/") fun canSubmitBets() = true
+    @GetMapping("/api/generalbets/has-bet/{user}") fun hasBet() = false
+    @GetMapping("/api/games") fun games() = listOf<Any>()
+    @GetMapping("/api/users/table") fun users() = listOf<Any>()
+}
 @RestController
 class StadiumController(val service: StadiumService) {
     companion object {

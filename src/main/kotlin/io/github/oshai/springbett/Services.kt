@@ -1,6 +1,7 @@
 package io.github.oshai.springbett
 
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class StadiumService(val repository: StadiumRepository) {
@@ -77,6 +78,36 @@ class PlayerService(val repository: PlayerRepository) {
     }
 
     fun delete(id: Int) {
+        repository.deleteById(id)
+    }
+}
+
+@Service
+class UserService(val repository: UserRepository) {
+    fun getOne(id: UUID): User {
+        return repository.findById(id).orElseThrow { Exception("user $id not found") }
+    }
+
+    fun getOne(username: String): User {
+        return getAll().firstOrNull { it.username == username } ?: throw Exception("iser $username not found")
+    }
+
+    fun getAll(): List<User> {
+        return repository.findAll().toList()
+    }
+
+    fun create(obj: User): User {
+        return repository.save(obj.copy(id = null))
+    }
+
+    fun update(obj: User): User {
+        if (!repository.existsById(obj.id!!)) {
+            throw Exception("player ${obj.id} do not exists")
+        }
+        return repository.save(obj.copy(id = null))
+    }
+
+    fun delete(id: UUID) {
         repository.deleteById(id)
     }
 }
