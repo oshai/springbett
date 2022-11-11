@@ -1,7 +1,6 @@
 package io.github.oshai.springbett
 
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.boot.runApplication
@@ -13,6 +12,7 @@ private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
 	runApplication<SpringbettApplication>(*args)
 }
+
 @SpringBootApplication
 class SpringbettApplication {
 

@@ -53,8 +53,8 @@ class DetailedGameService(
                 homeTeam = teamService.getOne(game.homeTeamId),
                 awayTeam = teamService.getOne(game.awayTeamId),
                 date = game.startTime.toString(),
-                homeScore = game.homeTeamScore,
-                awayScore = game.awayTeamScore,
+                homeScore = game.homeScore,
+                awayScore = game.awayScore,
                 stadium = stadiumService.getOne(game.stadiumId),
                 userHasBet = false,
                 closeTime = "2022-11-20T14:55:00Z",
@@ -181,7 +181,21 @@ class BetService(val br: BetRepository, val us: UserService) {
         return br.findAll().filter { it.userId == user.userId }
     }
 
+    fun create(obj: BetCreate): Bet {
+        return br.save(Bet(
+            gameId = obj.gameId,
+            awayScore = obj.awayScore,
+            homeScore = obj.homeScore,
+            userId = us.getOne(getRequestUser()).id()
+        ))
+    }
 }
+
+data class BetCreate(
+    val gameId: Int,
+    val homeScore: Int,
+    val awayScore: Int,
+)
 
 @Service
 class UserService(val repository: UserRepository) {
