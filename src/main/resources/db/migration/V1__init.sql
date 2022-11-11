@@ -49,6 +49,14 @@ create table if not exists bet
     away_score integer not null
 ) ;
 
+create table if not exists general_bet
+(
+    general_bet_id   serial primary key,
+    user_id uuid not null,
+    winning_team_id integer not null,
+    golden_boot_player_id integer not null
+) ;
+
 create table if not exists users
 (
     user_id uuid DEFAULT uuid_generate_v4 (),

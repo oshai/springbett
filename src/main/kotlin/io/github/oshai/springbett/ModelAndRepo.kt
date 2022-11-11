@@ -101,3 +101,14 @@ data class Cred(
 ) {
     fun id() = id!!
 }
+
+interface GeneralBetRepository : CrudRepository<GeneralBet, Int>
+
+@Table("general_bet")
+data class GeneralBet(val winningTeamId: Int,
+                      val goldenBootPlayerId: Int,
+                      val userId: UUID,
+                      @Id val generalBetId: Int? = null
+) {
+    fun id() = generalBetId!!
+}

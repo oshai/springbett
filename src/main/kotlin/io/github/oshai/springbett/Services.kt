@@ -192,6 +192,56 @@ class PlayerService(val repository: PlayerRepository) {
 }
 
 @Service
+class GeneralBetService(
+    private val repository: GeneralBetRepository,
+    private val us: UserService,
+    // private val detailedGameService: DetailedGameService
+) {
+    fun getOne(id: Int): GeneralBet {
+        return repository.findById(id).orElseThrow { Exception("GeneralBet $id not found") }
+    }
+
+    fun getAll(): List<GeneralBet> {
+        return repository.findAll().toList()
+    }
+
+    fun create(obj: CreateGeneralBet): GeneralBet {
+        val username = getRequestUserName()
+        val user = us.getOne(username)
+        return repository.save(GeneralBet(
+            winningTeamId = obj.winningTeamId,
+            goldenBootPlayerId = obj.goldenBootPlayerId,
+            userId = user.id(),
+        ))
+    }
+
+    fun update(obj: GeneralBet): GeneralBet {
+        if (!repository.existsById(obj.generalBetId!!)) {
+            throw Exception("player ${obj.generalBetId} do not exists")
+        }
+        return repository.save(obj.copy(generalBetId = null))
+    }
+
+    fun delete(id: Int) {
+        repository.deleteById(id)
+    }
+
+    fun hasBet(username: String): Boolean {
+        return getAll().any { us.getOne(it.userId).username == username }
+    }
+
+    fun getBetForUser(username: String): GeneralBet {
+        val username = getRequestUserName()
+        val user = us.getOne(username)
+        return repository.findAll().first { it.userId == user.userId }
+    }
+}
+
+data class CreateGeneralBet(
+    val goldenBootPlayerId: Int,
+    val winningTeamId: Int,
+)
+@Service
 class BetService(
     private val br: BetRepository,
     private val us: UserService,

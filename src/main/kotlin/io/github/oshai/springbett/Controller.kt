@@ -17,23 +17,25 @@ private val logger = KotlinLogging.logger {}
 class NopController() {
     @GetMapping("/api/generalbets/cansubmitbets/")
     fun canSubmitBets() = true
-    @GetMapping("/api/generalbets/has-bet/{user}")
-    fun hasBet() = false
-    @GetMapping("/api/generalbets")
-    fun gb() = listOf<Any>()
+
 }
 
 @RestController
 class RedirectController {
     @GetMapping("/bets_center")
     fun redirect1() = RedirectView("/")
-
     @GetMapping("/games/**")
     fun redirect2() = RedirectView("/")
     @GetMapping("/teams/**")
     fun redirect3() = RedirectView("/")
     @GetMapping("/stadiums/**")
     fun redirect4() = RedirectView("/")
+    @GetMapping("/users/**")
+    fun redirect5() = RedirectView("/")
+    @GetMapping("/manage")
+    fun redirect6() = RedirectView("/")
+    @GetMapping("/manage_users")
+    fun redirect7() = RedirectView("/")
 }
 
 @RestController
@@ -60,9 +62,22 @@ class GameController(val service: DetailedGameService) {
 }
 
 @RestController
-class GeneralBetController(val service: BetService) {
-// TODO
+class GeneralBetController(val service: GeneralBetService) {
 
+    @GetMapping("/api/generalbets/has-bet/{username}")
+    fun hasBet(@PathVariable("username") username: String) = service.hasBet(username)
+    ///api/generalbets/user/oshai
+    @GetMapping("/api/generalbets/user/{username}")
+    fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
+    @GetMapping("/api/generalbets")
+    fun getAll() = service.getAll()
+
+    @PostMapping("/api/generalbets")
+    fun create(@RequestBody body: CreateGeneralBet) = service.create(body)
+
+    @PutMapping("/api/generalbets/{generalBetId}")
+    fun update(@PathVariable("generalBetId") generalBetId: Int,
+               @RequestBody body: GeneralBet) = service.update(body.copy(generalBetId = generalBetId))
 }
 
 @RestController
