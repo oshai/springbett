@@ -27,10 +27,11 @@ class SpringbettApplication {
 }
 
 @Component
-class RunOnStartup(val us: UserService) {
+class RunOnStartup(val us: UserService, val tournamentCreator: TournamentCreator) {
 
 	@PostConstruct
 	fun init() {
+		tournamentCreator.create()
 		logger.info { "users are:\n${us.getAll()}" }
 	}
 
