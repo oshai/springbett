@@ -1,11 +1,15 @@
 package io.github.oshai.springbett
 
+import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.stereotype.Component
+import javax.annotation.PostConstruct
 
-
+private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
 	runApplication<SpringbettApplication>(*args)
 }
@@ -14,7 +18,7 @@ class SpringbettApplication {
 
 	// delete the db on startup
 	@Bean
-	fun cleanMigrateStrategy(): FlywayMigrationStrategy? {
+	fun cleanMigrateStrategy(): FlywayMigrationStrategy {
 		return FlywayMigrationStrategy { flyway ->
 			flyway.clean()
 			flyway.migrate()
@@ -22,3 +26,12 @@ class SpringbettApplication {
 	}
 }
 
+@Component
+class RunOnStartup(val us: UserService) {
+
+	@PostConstruct
+	fun init() {
+		logger.info { "users are:\n${us.getAll()}" }
+	}
+
+}

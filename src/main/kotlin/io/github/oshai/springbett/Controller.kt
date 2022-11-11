@@ -2,6 +2,7 @@ package io.github.oshai.springbett
 
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,6 +19,17 @@ class NopController() {
     @GetMapping("/api/games/open") fun openGames() = listOf<Any>()
     @GetMapping("/api/generalbets") fun gb() = listOf<Any>()
 }
+
+@RestController
+class BetController(val service: BetService) {
+    companion object {
+        private const val entityName = "bets"
+    }
+
+    @GetMapping("/api/$entityName/user/{username}")
+    fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
+
+}
 @RestController
 class StadiumController(val service: StadiumService) {
     companion object {
@@ -28,17 +40,17 @@ class StadiumController(val service: StadiumService) {
     fun getAll() = service.getAll()
 
     @GetMapping("/api/$entityName/{id}")
-    fun getOne(@RequestParam("id") id: Int) = service.getOne(id)
+    fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
     @PostMapping("/api/$entityName/create")
     fun create(@RequestBody body: Stadium) = service.create(body)
 
     @PutMapping("/api/$entityName/{id}")
-    fun update(@RequestParam("id") id: Int, @RequestBody body: Stadium) =
+    fun update(@PathVariable("id") id: Int, @RequestBody body: Stadium) =
         service.update(body.copy(id = id))
 
     @DeleteMapping("/api/$entityName/{id}")
-    fun delete(@RequestParam("id") id: Int) = service.delete(id)
+    fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
@@ -52,17 +64,17 @@ class TeamController(val service: TeamService) {
     fun getAll() = service.getAll()
 
     @GetMapping("/api/$entityName/{id}")
-    fun getOne(@RequestParam("id") id: Int) = service.getOne(id)
+    fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
     @PostMapping("/api/$entityName/create")
     fun create(@RequestBody body: Team) = service.create(body)
 
     @PutMapping("/api/$entityName/{id}")
-    fun update(@RequestParam("id") id: Int, @RequestBody body: Team) =
+    fun update(@PathVariable("id") id: Int, @RequestBody body: Team) =
         service.update(body.copy(id = id))
 
     @DeleteMapping("/api/$entityName/{id}")
-    fun delete(@RequestParam("id") id: Int) = service.delete(id)
+    fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
@@ -78,36 +90,36 @@ class PlayerController(val service: PlayerService) {
     fun getAll() = service.getAll()
 
     @GetMapping("/api/$entityName/{id}")
-    fun getOne(@RequestParam("id") id: Int) = service.getOne(id)
+    fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
     @PostMapping("/api/$entityName/create")
     fun create(@RequestBody body: Player) = service.create(body)
 
     @PutMapping("/api/$entityName/{id}")
-    fun update(@RequestParam("id") id: Int, @RequestBody body: Player) =
+    fun update(@PathVariable("id") id: Int, @RequestBody body: Player) =
         service.update(body.copy(id = id))
 
     @DeleteMapping("/api/$entityName/{id}")
-    fun delete(@RequestParam("id") id: Int) = service.delete(id)
+    fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
 @RestController
 class UserStatsController(val service: UserStatsService) {
-    companion object {
-        private const val entityName = "users"
-    }
 
-    @GetMapping("/api/$entityName")
+    @GetMapping("/api/users")
     fun getAll() = service.getAll()
 
-    @GetMapping("/api/$entityName/table")
+    @GetMapping("/api/users/table")
     fun getTable() = service.getTable()
 
-    @GetMapping("/api/$entityName/{username}")
-    fun getUser(username: String) = service.getUserStats(username)
+    @GetMapping("/api/users/{username}")
+    fun getUser(@PathVariable("username") username: String) = service.getUserStats(username)
 
-    @GetMapping("/api/$entityName/me")
-    fun getMe(username: String) = service.getUserStats(username)
+    @GetMapping("/api/users/me")
+    fun getMe(): UserStatsModel {
+        val username = getRequestUser()
+        return service.getUserStats(username)
+    }
 
 }

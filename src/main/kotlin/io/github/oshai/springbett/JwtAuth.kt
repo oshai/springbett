@@ -100,7 +100,7 @@ class AuthController(val userService: UserService) {
 
     @GetMapping("/api/account/userInfo")
     fun userInfo(): String {
-        val username = (SecurityContextHolder.getContext().authentication.principal as UserDetails).username
+        val username = getRequestUser()
         val user = userService.getOne(username)
         return """{
               "userName": "$username",
@@ -113,7 +113,9 @@ class AuthController(val userService: UserService) {
             }"""
     }
 
+
 }
+fun getRequestUser(): String = (SecurityContextHolder.getContext().authentication.principal as UserDetails).username
 
 @RestController
 @CrossOrigin
