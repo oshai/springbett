@@ -36,8 +36,8 @@ create table if not exists game
     home_ratio decimal not null,
     away_ratio decimal not null,
     tie_ratio decimal not null,
-    home_team_score integer,
-    away_team_score integer
+    home_score integer,
+    away_score integer
 ) ;
 
 create table if not exists bet
@@ -45,8 +45,8 @@ create table if not exists bet
     bet_id   serial primary key,
     user_id uuid not null,
     game_id integer not null,
-    home_team_score integer not null,
-    away_team_score integer not null
+    home_score integer not null,
+    away_score integer not null
 ) ;
 
 create table if not exists users

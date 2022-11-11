@@ -37,8 +37,8 @@ data class Bet(
     @Id val betId: Int? = null,
     val userId: UUID,
     val gameId: Int,
-    val homeTeamScore: Int,
-    val awayTeamScore: Int,
+    val homeScore: Int,
+    val awayScore: Int,
 ) {
     fun id() = betId!!
 }
@@ -55,8 +55,8 @@ data class Game(
     val homeRatio: BigDecimal,
     val tieRatio: BigDecimal,
     val awayRatio: BigDecimal,
-    val homeTeamScore: Int? = null,
-    val awayTeamScore: Int? = null,
+    val homeScore: Int? = null,
+    val awayScore: Int? = null,
     @Id val gameId: Int? = null,
 ) {
     fun id() = gameId!!

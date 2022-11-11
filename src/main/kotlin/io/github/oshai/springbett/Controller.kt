@@ -32,12 +32,12 @@ class GameController(val service: DetailedGameService) {
 
 @RestController
 class BetController(val service: BetService) {
-    companion object {
-        private const val entityName = "bets"
-    }
 
-    @GetMapping("/api/$entityName/user/{username}")
+    @GetMapping("/api/bets/user/{username}")
     fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
+
+    @PostMapping("/api/bets/")
+    fun create(@RequestBody body: BetCreate) = service.create(body)
 
 }
 
