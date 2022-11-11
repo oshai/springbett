@@ -38,31 +38,48 @@ class StadiumService(val repository: StadiumRepository) {
 
 @Service
 class DetailedGameService(
-    val gameService: GameService,
-    val teamService: TeamService,
-    val stadiumService: StadiumService,
+    private val gameService: GameService,
+    private val teamService: TeamService,
+    private val stadiumService: StadiumService,
 ) {
     fun getAll(): List<DetailedGame> {
         return gameService.getAll().map { game ->
-            DetailedGame(
-                gameId = game.id(),
-                ratioWeight = game.ratioWeight,
-                homeRatio = game.homeRatio,
-                tieRatio = game.tieRatio,
-                awayRatio = game.awayRatio,
-                homeTeam = teamService.getOne(game.homeTeamId),
-                awayTeam = teamService.getOne(game.awayTeamId),
-                date = game.startTime.toString(),
-                homeScore = game.homeScore,
-                awayScore = game.awayScore,
-                stadium = stadiumService.getOne(game.stadiumId),
-                userHasBet = false,
-                closeTime = "2022-11-20T14:55:00Z",
-                isOpen = true,
-                isPendingUpdate = false,
-                isBetResolved = false,
-            )
+            createDetailedGame(game.id())
         }
+    }
+
+    fun createDetailedGame(gameId: Int): DetailedGame {
+        val game = gameService.getOne(gameId)
+        return DetailedGame(
+            gameId = game.id(),
+            ratioWeight = game.ratioWeight,
+            homeRatio = game.homeRatio,
+            tieRatio = game.tieRatio,
+            awayRatio = game.awayRatio,
+            homeTeam = teamService.getOne(game.homeTeamId),
+            awayTeam = teamService.getOne(game.awayTeamId),
+            date = game.startTime.toString(),
+            homeScore = game.homeScore,
+            awayScore = game.awayScore,
+            stadium = stadiumService.getOne(game.stadiumId),
+            userHasBet = false,
+            closeTime = "2022-11-20T14:55:00Z",
+            isOpen = true,
+            isPendingUpdate = false,
+            isBetResolved = false,
+        )
+    }
+
+    fun getOpenGames(): List<DetailedGame> {
+        return getAll().filter { it.isOpen }
+    }
+
+    fun getTeamGames(teamId: Int): List<DetailedGame> {
+        return getAll().filter { it.awayTeam.teamId == teamId || it.homeTeam.teamId == teamId }
+    }
+
+    fun getStadiumGames(stadiumId: Int): List<DetailedGame> {
+        return getAll().filter { it.stadium.stadiumId == stadiumId }
     }
 
 }
@@ -175,21 +192,71 @@ class PlayerService(val repository: PlayerRepository) {
 }
 
 @Service
-class BetService(val br: BetRepository, val us: UserService) {
-    fun getUserBets(username: String): List<Bet> {
+class BetService(
+    private val br: BetRepository,
+    private val us: UserService,
+    private val detailedGameService: DetailedGameService
+) {
+    fun getUserBets(username: String): List<DetailedBet> {
         val user = us.getOne(username)
-        return br.findAll().filter { it.userId == user.userId }
+        return br.findAll().filter { it.userId == user.userId }.map { bet ->
+            DetailedBet(
+                betId = bet.id(),
+                homeScore = bet.homeScore,
+                awayScore = bet.awayScore,
+                game = detailedGameService.createDetailedGame(bet.gameId),
+                user = user,
+            )
+        }
+    }
+
+    fun getUserBetForGame(gameId: Int): DetailedBet {
+        val username = getRequestUserName()
+        val user = us.getOne(username)
+        val bet = br.findAll().firstOrNull { it.userId == user.userId && it.gameId == gameId }
+        if (bet == null) {
+            return DetailedBet(
+                betId = -1,
+                homeScore = null,
+                awayScore = null,
+                game = detailedGameService.createDetailedGame(gameId),
+                user = user,
+            )
+        } else {
+            return DetailedBet(
+                betId = bet.id(),
+                homeScore = bet.homeScore,
+                awayScore = bet.awayScore,
+                game = detailedGameService.createDetailedGame(bet.gameId),
+                user = user,
+            )
+        }
     }
 
     fun create(obj: BetCreate): Bet {
-        return br.save(Bet(
-            gameId = obj.gameId,
-            awayScore = obj.awayScore,
-            homeScore = obj.homeScore,
-            userId = us.getOne(getRequestUser()).id()
-        ))
+        return br.save(
+            Bet(
+                gameId = obj.gameId,
+                awayScore = obj.awayScore,
+                homeScore = obj.homeScore,
+                userId = us.getOne(getRequestUserName()).id()
+            )
+        )
     }
 }
+
+data class DetailedBet(
+    val betId: Int,
+    val homeScore: Int?,
+    val awayScore: Int?,
+    val game: DetailedGame,
+    val user: User,
+    val gameMarkWin: Boolean = false,
+    val isOpenForBetting: Boolean = true,
+    val isResolved: Boolean = false,
+    val points: Int = 0,
+    val resultWin: Boolean = false,
+)
 
 data class BetCreate(
     val gameId: Int,

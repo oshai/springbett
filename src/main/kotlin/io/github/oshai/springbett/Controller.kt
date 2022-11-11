@@ -8,14 +8,32 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.view.RedirectView
+
 
 private val logger = KotlinLogging.logger {}
 
 @RestController
 class NopController() {
-    @GetMapping("/api/generalbets/cansubmitbets/") fun canSubmitBets() = true
-    @GetMapping("/api/generalbets/has-bet/{user}") fun hasBet() = false
-    @GetMapping("/api/generalbets") fun gb() = listOf<Any>()
+    @GetMapping("/api/generalbets/cansubmitbets/")
+    fun canSubmitBets() = true
+    @GetMapping("/api/generalbets/has-bet/{user}")
+    fun hasBet() = false
+    @GetMapping("/api/generalbets")
+    fun gb() = listOf<Any>()
+}
+
+@RestController
+class RedirectController {
+    @GetMapping("/bets_center")
+    fun redirect1() = RedirectView("/")
+
+    @GetMapping("/games/**")
+    fun redirect2() = RedirectView("/")
+    @GetMapping("/teams/**")
+    fun redirect3() = RedirectView("/")
+    @GetMapping("/stadiums/**")
+    fun redirect4() = RedirectView("/")
 }
 
 @RestController
@@ -25,9 +43,26 @@ class GameController(val service: DetailedGameService) {
         return service.getAll()
     }
 
-    @GetMapping("/api/games/open") fun openGames(): List<DetailedGame> {
-        return service.getAll().filter { it.isOpen }
+    @GetMapping("/api/games/open")
+    fun openGames(): List<DetailedGame> {
+        return service.getOpenGames()
     }
+
+    @GetMapping("/api/teams/{teamId}/games")
+    fun teamGames(@PathVariable("teamId") teamId: Int): List<DetailedGame> {
+        return service.getTeamGames(teamId)
+    }
+
+    @GetMapping("/api/games/Stadium/{stadiumId}")
+    fun stadiumGames(@PathVariable("stadiumId") stadiumId: Int): List<DetailedGame> {
+        return service.getStadiumGames(stadiumId)
+    }
+}
+
+@RestController
+class GeneralBetController(val service: BetService) {
+// TODO
+
 }
 
 @RestController
@@ -35,6 +70,9 @@ class BetController(val service: BetService) {
 
     @GetMapping("/api/bets/user/{username}")
     fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
+
+    @GetMapping("/api/games/{gameId}/mybet")
+    fun getUserBetForGame(@PathVariable("gameId") gameId: Int) = service.getUserBetForGame(gameId)
 
     @PostMapping("/api/bets/")
     fun create(@RequestBody body: BetCreate) = service.create(body)
@@ -90,7 +128,6 @@ class TeamController(val service: TeamService) {
 }
 
 
-
 @RestController
 class PlayerController(val service: PlayerService) {
     companion object {
@@ -129,7 +166,7 @@ class UserStatsController(val service: UserStatsService) {
 
     @GetMapping("/api/users/me")
     fun getMe(): UserStatsModel {
-        val username = getRequestUser()
+        val username = getRequestUserName()
         return service.getUserStats(username)
     }
 
