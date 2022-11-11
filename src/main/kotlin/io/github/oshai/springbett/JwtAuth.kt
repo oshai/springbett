@@ -161,7 +161,7 @@ class JwtAuthenticationController(
     private fun authenticate(username: String, password: String) {
         try {
             val user = us.getOne(username)
-            val cred = cr.findById(user.id!!)
+            val cred = cr.findById(user.userId!!)
             if (password != cred.get().pw) {
                 throw Exception("wrong username/password")
             }
@@ -331,7 +331,7 @@ class JwtUserDetailsService(val cr: CredRepository, val us: UserService) : UserD
     override fun loadUserByUsername(username: String): UserDetails {
         try {
             val user = us.getOne(username)
-            val cred = cr.findById(user.id!!)
+            val cred = cr.findById(user.userId!!)
             return User(
                 user.username, cred.get().pw,
                 listOf()

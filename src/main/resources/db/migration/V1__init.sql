@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table if not exists stadium
 (
-    id   serial primary key,
+    stadium_id   serial primary key,
     name varchar(255) not null,
     short_name varchar(255) not null unique,
     city varchar(255) not null,
@@ -13,36 +13,36 @@ create table if not exists stadium
 
 create table if not exists team
 (
-    id   serial primary key,
+    team_id   serial primary key,
     name varchar(255) not null,
     short_name varchar(255) not null unique
 ) ;
 
 create table if not exists player
 (
-    id   serial primary key,
+    player_id   serial primary key,
     name varchar(255) not null,
     short_name varchar(255) not null unique
 ) ;
 
 create table if not exists game
 (
-    id   serial primary key,
+    game_id   serial primary key,
     stadium_id integer not null,
     home_team_id integer not null,
     away_team_id integer not null,
-    start_time timestamp not null, -- always utc
+    start_time timestamp not null,
     ratio_weight decimal not null,
     home_ratio decimal not null,
     away_ratio decimal not null,
     tie_ratio decimal not null,
-    home_team_score integer not null,
-    away_team_score integer not null
+    home_team_score integer,
+    away_team_score integer
 ) ;
 
 create table if not exists bet
 (
-    id   serial primary key,
+    bet_id   serial primary key,
     user_id uuid not null,
     game_id integer not null,
     home_team_score integer not null,
@@ -51,7 +51,7 @@ create table if not exists bet
 
 create table if not exists users
 (
-    id uuid DEFAULT uuid_generate_v4 (),
+    user_id uuid DEFAULT uuid_generate_v4 (),
     username varchar(255) not null,
     first_name varchar(255) not null,
     last_name varchar(255) not null,
@@ -65,8 +65,8 @@ create table if not exists cred
     pw varchar(255) not null
 ) ;
 
-insert into users(id, username, first_name, last_name, email, is_admin)
+insert into users(user_id, username, first_name, last_name, email, is_admin)
 values ('00112233-4455-6677-c899-aabbccddeeff', 'oshai', 'ohad', 'shai', 'dummy@gmail.com', true);
 
-insert into cred (id, pw) select id,'oshai' from users;
+insert into cred (id, pw) select user_id,'oshai' from users;
 

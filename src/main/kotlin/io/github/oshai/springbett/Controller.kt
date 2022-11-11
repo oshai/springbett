@@ -1,23 +1,33 @@
 package io.github.oshai.springbett
 
+import mu.KotlinLogging
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-
+private val logger = KotlinLogging.logger {}
 
 @RestController
 class NopController() {
     @GetMapping("/api/generalbets/cansubmitbets/") fun canSubmitBets() = true
     @GetMapping("/api/generalbets/has-bet/{user}") fun hasBet() = false
-    @GetMapping("/api/games") fun games() = listOf<Any>()
-    @GetMapping("/api/games/open") fun openGames() = listOf<Any>()
     @GetMapping("/api/generalbets") fun gb() = listOf<Any>()
+}
+
+@RestController
+class GameController(val service: DetailedGameService) {
+    @GetMapping("/api/games")
+    fun getDetailedGames(): List<DetailedGame> {
+        return service.getAll()
+    }
+
+    @GetMapping("/api/games/open") fun openGames(): List<DetailedGame> {
+        return service.getAll().filter { it.isOpen }
+    }
 }
 
 @RestController
@@ -30,6 +40,7 @@ class BetController(val service: BetService) {
     fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
 
 }
+
 @RestController
 class StadiumController(val service: StadiumService) {
     companion object {
@@ -47,7 +58,7 @@ class StadiumController(val service: StadiumService) {
 
     @PutMapping("/api/$entityName/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Stadium) =
-        service.update(body.copy(id = id))
+        service.update(body.copy(stadiumId = id))
 
     @DeleteMapping("/api/$entityName/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
@@ -71,7 +82,7 @@ class TeamController(val service: TeamService) {
 
     @PutMapping("/api/$entityName/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Team) =
-        service.update(body.copy(id = id))
+        service.update(body.copy(teamId = id))
 
     @DeleteMapping("/api/$entityName/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
@@ -97,7 +108,7 @@ class PlayerController(val service: PlayerService) {
 
     @PutMapping("/api/$entityName/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Player) =
-        service.update(body.copy(id = id))
+        service.update(body.copy(playerId = id))
 
     @DeleteMapping("/api/$entityName/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
