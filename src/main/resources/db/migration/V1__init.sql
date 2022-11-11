@@ -1,4 +1,5 @@
 
+-- uuid extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create table if not exists stadium
@@ -24,6 +25,30 @@ create table if not exists player
     short_name varchar(255) not null unique
 ) ;
 
+create table if not exists game
+(
+    id   serial primary key,
+    stadium_id integer not null,
+    home_team_id integer not null,
+    away_team_id integer not null,
+    start_time timestamp not null, -- always utc
+    ratio_weight decimal not null,
+    home_ratio decimal not null,
+    away_ratio decimal not null,
+    tie_ratio decimal not null,
+    home_team_score integer not null,
+    away_team_score integer not null
+) ;
+
+create table if not exists bet
+(
+    id   serial primary key,
+    user_id uuid not null,
+    game_id integer not null,
+    home_team_score integer not null,
+    away_team_score integer not null
+) ;
+
 create table if not exists users
 (
     id uuid DEFAULT uuid_generate_v4 (),
@@ -40,8 +65,8 @@ create table if not exists cred
     pw varchar(255) not null
 ) ;
 
-insert into users(username, first_name, last_name, email, is_admin)
-values ('oshai', 'ohad', 'shai', 'dummy@gmail.com', true);
+insert into users(id, username, first_name, last_name, email, is_admin)
+values ('00112233-4455-6677-c899-aabbccddeeff', 'oshai', 'ohad', 'shai', 'dummy@gmail.com', true);
 
 insert into cred (id, pw) select id,'oshai' from users;
 

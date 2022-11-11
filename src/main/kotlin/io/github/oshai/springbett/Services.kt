@@ -83,6 +83,15 @@ class PlayerService(val repository: PlayerRepository) {
 }
 
 @Service
+class BetService(val br: BetRepository, val us: UserService) {
+    fun getUserBets(username: String): List<Bet> {
+        val user = us.getOne(username)
+        return br.findAll().filter { it.userId == user.id }
+    }
+
+}
+
+@Service
 class UserService(val repository: UserRepository) {
     fun getOne(id: UUID): User {
         return repository.findById(id).orElseThrow { Exception("user $id not found") }

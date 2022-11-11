@@ -29,8 +29,8 @@ interface BetRepository : CrudRepository<Bet, Int>
 data class Bet(@Id val id: Int? = null,
                val userId: UUID,
                val gameId: Int,
-               val homeScore: Int,
-               val awayScore: Int,
+               val homeTeamScore: Int,
+               val awayTeamScore: Int,
 )
 
 interface GameRepository : CrudRepository<Cred, UUID>
@@ -41,11 +41,13 @@ data class Game(
     val stadiumId: Int,
     val homeTeamId: Int,
     val awayTeamId: Int,
-    val dateTime: ZonedDateTime,
+    val startTime: ZonedDateTime,
     val ratioWeight: BigDecimal,
     val homeRatio: BigDecimal,
     val tieRatio: BigDecimal,
     val awayRatio: BigDecimal,
+    val homeTeamScore: Int?,
+    val awayTeamScore: Int?,
 )
 interface PlayerRepository : CrudRepository<Player, Int>
 
