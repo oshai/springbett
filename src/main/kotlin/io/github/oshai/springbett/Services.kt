@@ -208,11 +208,13 @@ class GeneralBetService(
     fun create(obj: CreateGeneralBet): GeneralBet {
         val username = getRequestUserName()
         val user = us.getOne(username)
-        return repository.save(GeneralBet(
-            winningTeamId = obj.winningTeamId,
-            goldenBootPlayerId = obj.goldenBootPlayerId,
-            userId = user.id(),
-        ))
+        return repository.save(
+            GeneralBet(
+                winningTeamId = obj.winningTeamId,
+                goldenBootPlayerId = obj.goldenBootPlayerId,
+                userId = user.id(),
+            )
+        )
     }
 
     fun update(obj: GeneralBet): GeneralBet {
@@ -241,6 +243,7 @@ data class CreateGeneralBet(
     val goldenBootPlayerId: Int,
     val winningTeamId: Int,
 )
+
 @Service
 class BetService(
     private val br: BetRepository,
@@ -315,7 +318,10 @@ data class BetCreate(
 )
 
 @Service
-class UserService(val repository: UserRepository) {
+class UserService(
+    val repository: UserRepository,
+    val credRepository: CredRepository,
+) {
     fun getOne(id: UUID): User {
         return repository.findById(id).orElseThrow { Exception("user $id not found") }
     }
@@ -341,6 +347,25 @@ class UserService(val repository: UserRepository) {
 
     fun delete(id: UUID) {
         repository.deleteById(id)
+    }
+
+    fun register(body: Registration) {
+        if (body.password != body.confirmPassword) {
+            throw Exception("this went wrong")
+        }
+        if (repository.findAll().any { it.username == body.username }) {
+            throw Exception("User name already taken!")
+        }
+        val user = repository.save(
+            User(
+                username = body.username,
+                firstName = body.firstname,
+                lastName = body.lastname,
+                email = body.email,
+                isAdmin = false,
+            )
+        )
+        credRepository.save(Cred(user.id(), body.password))
     }
 }
 

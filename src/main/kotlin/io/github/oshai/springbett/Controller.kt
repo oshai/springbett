@@ -1,5 +1,6 @@
 package io.github.oshai.springbett
 
+import com.google.gson.Gson
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,34 +9,47 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.servlet.view.RedirectView
+import org.springframework.web.servlet.ModelAndView
 
 
 private val logger = KotlinLogging.logger {}
 
 @RestController
-class NopController() {
+class GeneralControllers(val us: UserService) {
     @GetMapping("/api/generalbets/cansubmitbets/")
     fun canSubmitBets() = true
 
+    @PostMapping("/api/account/register")
+    fun register(@RequestBody body: String) {
+        return us.register(Gson().fromJson(body, Registration::class.java))
+    }
+
+
 }
+
+data class Registration(
+    val username: String,
+    val confirmPassword: String,
+    val password: String,
+    val email: String,
+    val firstname: String,
+    val lastname: String,
+)
 
 @RestController
 class RedirectController {
-    @GetMapping("/bets_center")
-    fun redirect1() = RedirectView("/")
-    @GetMapping("/games/**")
-    fun redirect2() = RedirectView("/")
-    @GetMapping("/teams/**")
-    fun redirect3() = RedirectView("/")
-    @GetMapping("/stadiums/**")
-    fun redirect4() = RedirectView("/")
-    @GetMapping("/users/**")
-    fun redirect5() = RedirectView("/")
-    @GetMapping("/manage")
-    fun redirect6() = RedirectView("/")
-    @GetMapping("/manage_users")
-    fun redirect7() = RedirectView("/")
+    @GetMapping(
+        "/bets_center",
+        "/games/**",
+        "/teams/**",
+        "/stadiums/**",
+        "/users/**",
+        "/login",
+        "/join",
+        "/manage",
+        "/manage_users",
+    )
+    fun forward() = ModelAndView("forward:/index.html")
 }
 
 @RestController

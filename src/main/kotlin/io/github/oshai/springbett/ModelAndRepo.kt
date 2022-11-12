@@ -2,6 +2,7 @@ package io.github.oshai.springbett
 
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.annotation.Id
+import org.springframework.data.domain.Persistable
 import org.springframework.data.repository.CrudRepository
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -96,10 +97,16 @@ interface CredRepository : CrudRepository<Cred, UUID>
 
 @Table("cred")
 data class Cred(
-    @Id val id: UUID? = null,
+    @Id val uuid: UUID,
     val pw: String,
-) {
-    fun id() = id!!
+): Persistable<UUID> {
+    override fun getId(): UUID {
+        return uuid
+    }
+
+    override fun isNew(): Boolean {
+        return true
+    }
 }
 
 interface GeneralBetRepository : CrudRepository<GeneralBet, Int>

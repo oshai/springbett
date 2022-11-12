@@ -60,21 +60,28 @@ create table if not exists general_bet
 create table if not exists users
 (
     user_id uuid DEFAULT uuid_generate_v4 (),
-    username varchar(255) not null,
+    username varchar(255) not null unique,
     first_name varchar(255) not null,
     last_name varchar(255) not null,
-    email varchar(255) not null,
+    email varchar(255) not null unique,
     is_admin boolean not null
 ) ;
 
 create table if not exists cred
 (
-    id uuid,
+    uuid uuid not null primary key,
     pw varchar(255) not null
 ) ;
 
 insert into users(user_id, username, first_name, last_name, email, is_admin)
-values ('00112233-4455-6677-c899-aabbccddeeff', 'oshai', 'ohad', 'shai', 'dummy@gmail.com', true);
+values
+('00112233-4455-6677-c899-aabbccddeeff', 'oshai', 'Ohad', 'Shai', 'dummy@gmail.com', true),
+('00112234-4455-6677-c899-aabbccddeeff', 'monkey', 'Monkey', 'Monk', 'monkey@zoo.com', false),
+('00112235-4455-6677-c899-aabbccddeeff', 'winner', 'Always', 'Low', 'alwayslow@gmail.com', false),
+('00112236-4455-6677-c899-aabbccddeeff', 'loser', 'Always', 'High', 'alwayshigh@gmail.com', false),
+('00112237-4455-6677-c899-aabbccddeeff', 'zero', 'Always', 'Zero', 'alwayszero@gmail.com', false)
 
-insert into cred (id, pw) select user_id,'oshai' from users;
+;
+
+insert into cred (uuid, pw) select user_id,'oshai' from users;
 

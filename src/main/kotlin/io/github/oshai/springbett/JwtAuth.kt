@@ -1,6 +1,7 @@
 package io.github.oshai.springbett
 
 
+import com.google.gson.Gson
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -66,6 +68,7 @@ class SecurityConfig(
             .antMatchers("/api/account/externalLogins").permitAll()
             .antMatchers("/api/account/userInfo").permitAll()
             .antMatchers("/api/account/logout").permitAll()
+            .antMatchers("/api/account/register").permitAll()
             .antMatchers("/api/**").authenticated()
             .anyRequest().permitAll() // all other requests shouldn't be authenticated
             .and().exceptionHandling() // make sure we use stateless session; session won't be used to
@@ -115,6 +118,7 @@ class AuthController(val userService: UserService) {
 
 
 }
+
 fun getRequestUserName(): String = (SecurityContextHolder.getContext().authentication.principal as UserDetails).username
 
 @RestController
@@ -131,20 +135,24 @@ class JwtAuthenticationController(
         method = [RequestMethod.POST],
         consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE]
     )
-    fun createAuthenticationToken(authenticationRequest: JwtRequest): ResponseEntity<*> {
+    fun createAuthenticationToken(body: JwtRequest): ResponseEntity<*> {
+        println(body)
+        val authenticationRequest = body
         authenticate(authenticationRequest.username, authenticationRequest.password)
         val userDetails = userDetailsService
             .loadUserByUsername(authenticationRequest.username)
         val token = jwtTokenUtil.generateToken(userDetails)
         val user = us.getOne(authenticationRequest.username)
         return ResponseEntity.ok<Any>(
-            JwtResponse(
-                token,
-                userName = userDetails.username,
-                firstName = user.firstName,
-                lastName = user.lastName,
-                email = user.email,
-                roles = user.roles,
+            Gson().toJson(
+                JwtResponse(
+                    token,
+                    userName = userDetails.username,
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    email = user.email,
+                    roles = user.roles,
+                )
             )
         )
     }
@@ -237,12 +245,18 @@ class JwtAuthenticationEntryPoint : AuthenticationEntryPoint, Serializable {
     }
 }
 
-class JwtRequest(var username: String, var password: String, var rememberMe: Boolean, var grant_type: String) :
+class JwtRequest(var username: String, var password: String, var rememberMe: Boolean?, var grant_type: String) :
     Serializable {
 
     companion object {
         private const val serialVersionUID = 1L
     }
+
+    override fun toString(): String {
+        return "JwtRequest(username='$username', password='***', rememberMe=$rememberMe, grant_type='$grant_type')"
+    }
+
+
 }
 
 class JwtResponse(
