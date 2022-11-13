@@ -124,7 +124,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("QATAR").id(),
                 awayTeamId = teamService.getByFullName("ECUADOR").id(),
-                startTime = ZonedDateTime.of(2022, 11, 20, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 20, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -137,7 +137,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("ENGLAND").id(),
                 awayTeamId = teamService.getByFullName("IRAN").id(),
-                startTime = ZonedDateTime.of(2022, 11, 21, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 21, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -150,7 +150,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SENEGAL").id(),
                 awayTeamId = teamService.getByFullName("NETHERLANDS").id(),
-                startTime = ZonedDateTime.of(2022, 11, 21, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 21, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -163,7 +163,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("USA").id(),
                 awayTeamId = teamService.getByFullName("WALES").id(),
-                startTime = ZonedDateTime.of(2022, 11, 21, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 21, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -176,7 +176,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("ARGENTINA").id(),
                 awayTeamId = teamService.getByFullName("SAUDI ARABIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 22, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 22, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -189,7 +189,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("DENMARK").id(),
                 awayTeamId = teamService.getByFullName("TUNISIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 22, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 22, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -202,7 +202,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("MEXICO").id(),
                 awayTeamId = teamService.getByFullName("POLAND").id(),
-                startTime = ZonedDateTime.of(2022, 11, 22, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 22, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -215,7 +215,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("FRANCE").id(),
                 awayTeamId = teamService.getByFullName("AUSTRALIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 22, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 22, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -228,7 +228,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("MOROCCO").id(),
                 awayTeamId = teamService.getByFullName("CROATIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 23, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 23, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -241,7 +241,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("GERMANY").id(),
                 awayTeamId = teamService.getByFullName("JAPAN").id(),
-                startTime = ZonedDateTime.of(2022, 11, 23, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 23, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -254,7 +254,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SPAIN").id(),
                 awayTeamId = teamService.getByFullName("COSTA RICA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 23, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 23, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -267,7 +267,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("BELGIUM").id(),
                 awayTeamId = teamService.getByFullName("CANADA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 23, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 23, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -280,7 +280,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SWITZERLAND").id(),
                 awayTeamId = teamService.getByFullName("CAMERON").id(),
-                startTime = ZonedDateTime.of(2022, 11, 24, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 24, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -293,7 +293,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("URUGUAY").id(),
                 awayTeamId = teamService.getByFullName("KOREA REPUBLIC").id(),
-                startTime = ZonedDateTime.of(2022, 11, 24, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 24, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -306,7 +306,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("PORTUGAL").id(),
                 awayTeamId = teamService.getByFullName("GHANA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 24, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 24, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -319,7 +319,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("BRAZIL").id(),
                 awayTeamId = teamService.getByFullName("SERBIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 24, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 24, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -332,7 +332,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("WALES").id(),
                 awayTeamId = teamService.getByFullName("IRAN").id(),
-                startTime = ZonedDateTime.of(2022, 11, 25, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 25, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -345,7 +345,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("QATAR").id(),
                 awayTeamId = teamService.getByFullName("SENEGAL").id(),
-                startTime = ZonedDateTime.of(2022, 11, 25, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 25, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -358,7 +358,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("NETHERLANDS").id(),
                 awayTeamId = teamService.getByFullName("ECUADOR").id(),
-                startTime = ZonedDateTime.of(2022, 11, 25, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 25, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -371,7 +371,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("ENGLAND").id(),
                 awayTeamId = teamService.getByFullName("USA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 25, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 25, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -384,7 +384,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("TUNISIA").id(),
                 awayTeamId = teamService.getByFullName("AUSTRALIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 26, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 26, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -397,7 +397,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("POLAND").id(),
                 awayTeamId = teamService.getByFullName("SAUDI ARABIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 26, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 26, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -410,7 +410,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("FRANCE").id(),
                 awayTeamId = teamService.getByFullName("DENMARK").id(),
-                startTime = ZonedDateTime.of(2022, 11, 26, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 26, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -423,7 +423,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("ARGENTINA").id(),
                 awayTeamId = teamService.getByFullName("MEXICO").id(),
-                startTime = ZonedDateTime.of(2022, 11, 26, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 26, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -436,7 +436,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("JAPAN").id(),
                 awayTeamId = teamService.getByFullName("COSTA RICA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 27, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 27, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -449,7 +449,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("BELGIUM").id(),
                 awayTeamId = teamService.getByFullName("MOROCCO").id(),
-                startTime = ZonedDateTime.of(2022, 11, 27, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 27, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -462,7 +462,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("CROATIA").id(),
                 awayTeamId = teamService.getByFullName("CANADA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 27, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 27, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -475,7 +475,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SPAIN").id(),
                 awayTeamId = teamService.getByFullName("GERMANY").id(),
-                startTime = ZonedDateTime.of(2022, 11, 27, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 27, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -488,7 +488,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("CAMERON").id(),
                 awayTeamId = teamService.getByFullName("SERBIA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 28, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 28, 12, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -501,7 +501,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("KOREA REPUBLIC").id(),
                 awayTeamId = teamService.getByFullName("GHANA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 28, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 28, 15, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -514,7 +514,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("BRAZIL").id(),
                 awayTeamId = teamService.getByFullName("SWITZERLAND").id(),
-                startTime = ZonedDateTime.of(2022, 11, 28, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 28, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -527,7 +527,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("PORTUGAL").id(),
                 awayTeamId = teamService.getByFullName("URUGUAY").id(),
-                startTime = ZonedDateTime.of(2022, 11, 28, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 28, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -540,7 +540,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("ECUADOR").id(),
                 awayTeamId = teamService.getByFullName("SENEGAL").id(),
-                startTime = ZonedDateTime.of(2022, 11, 29, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 29, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -553,7 +553,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("NETHERLANDS").id(),
                 awayTeamId = teamService.getByFullName("QATAR").id(),
-                startTime = ZonedDateTime.of(2022, 11, 29, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 29, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -566,7 +566,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("IRAN").id(),
                 awayTeamId = teamService.getByFullName("USA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 29, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 29, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -579,7 +579,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("WALES").id(),
                 awayTeamId = teamService.getByFullName("ENGLAND").id(),
-                startTime = ZonedDateTime.of(2022, 11, 29, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 29, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -592,7 +592,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("TUNISIA").id(),
                 awayTeamId = teamService.getByFullName("FRANCE").id(),
-                startTime = ZonedDateTime.of(2022, 11, 30, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 30, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -605,7 +605,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("AUSTRALIA").id(),
                 awayTeamId = teamService.getByFullName("DENMARK").id(),
-                startTime = ZonedDateTime.of(2022, 11, 30, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 30, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -618,7 +618,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("POLAND").id(),
                 awayTeamId = teamService.getByFullName("ARGENTINA").id(),
-                startTime = ZonedDateTime.of(2022, 11, 30, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 30, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -631,7 +631,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SAUDI ARABIA").id(),
                 awayTeamId = teamService.getByFullName("MEXICO").id(),
-                startTime = ZonedDateTime.of(2022, 11, 30, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 11, 30, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -644,7 +644,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("CROATIA").id(),
                 awayTeamId = teamService.getByFullName("BELGIUM").id(),
-                startTime = ZonedDateTime.of(2022, 12, 1, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 1, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Ahmad Bin Ali Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -657,7 +657,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("CANADA").id(),
                 awayTeamId = teamService.getByFullName("MOROCCO").id(),
-                startTime = ZonedDateTime.of(2022, 12, 1, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 1, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Thumama Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -670,7 +670,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("JAPAN").id(),
                 awayTeamId = teamService.getByFullName("SPAIN").id(),
-                startTime = ZonedDateTime.of(2022, 12, 1, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 1, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Khalifa International Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -683,7 +683,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("COSTA RICA").id(),
                 awayTeamId = teamService.getByFullName("GERMANY").id(),
-                startTime = ZonedDateTime.of(2022, 12, 1, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 1, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Bayt Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -696,7 +696,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("KOREA REPUBLIC").id(),
                 awayTeamId = teamService.getByFullName("PORTUGAL").id(),
-                startTime = ZonedDateTime.of(2022, 12, 2, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 2, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Education City Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -709,7 +709,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("GHANA").id(),
                 awayTeamId = teamService.getByFullName("URUGUAY").id(),
-                startTime = ZonedDateTime.of(2022, 12, 2, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 2, 17, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Al Janoub Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -722,7 +722,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("SERBIA").id(),
                 awayTeamId = teamService.getByFullName("SWITZERLAND").id(),
-                startTime = ZonedDateTime.of(2022, 12, 2, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 2, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Stadium 974").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,
@@ -735,7 +735,7 @@ class TournamentCreator(
             Game(
                 homeTeamId = teamService.getByFullName("CAMERON").id(),
                 awayTeamId = teamService.getByFullName("BRAZIL").id(),
-                startTime = ZonedDateTime.of(2022, 12, 2, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
+                date = ZonedDateTime.of(2022, 12, 2, 21, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS)).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(),
                 stadiumId = stadiumService.getByFullName("Lusail Stadium").id(),
                 homeRatio = BigDecimal.ONE,
                 awayRatio = BigDecimal.ONE,

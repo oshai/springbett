@@ -31,7 +31,7 @@ create table if not exists game
     stadium_id integer not null,
     home_team_id integer not null,
     away_team_id integer not null,
-    start_time timestamp not null,
+    date timestamp not null,
     ratio_weight decimal not null,
     home_ratio decimal not null,
     away_ratio decimal not null,

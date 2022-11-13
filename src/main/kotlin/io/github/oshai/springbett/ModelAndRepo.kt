@@ -51,7 +51,7 @@ data class Game(
     val stadiumId: Int,
     val homeTeamId: Int,
     val awayTeamId: Int,
-    val startTime: LocalDateTime,
+    val date: LocalDateTime, // start time
     val ratioWeight: BigDecimal,
     val homeRatio: BigDecimal,
     val tieRatio: BigDecimal,

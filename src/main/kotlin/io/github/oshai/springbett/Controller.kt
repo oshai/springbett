@@ -108,10 +108,12 @@ class UserManagementController(private val service: UserService) {
     fun delete(@PathVariable("userId") userId: UUID) {
         return service.delete(userId)
     }
+
     @PostMapping("/api/users/makeadmin/{userId}")
     fun makeAdmin(@PathVariable("userId") userId: UUID): User {
         return service.makeAdmin(userId)
     }
+
     @PostMapping("/api/account/changePassword")
     fun changePassword(@RequestBody body: String) {
         return service.changePassword(Gson().fromJson(body, ChangePassword::class.java))
@@ -123,6 +125,7 @@ data class ChangePassword(
     val newPassword: String,
     val oldPassword: String,
 )
+
 data class Registration(
     val username: String,
     val confirmPassword: String,
@@ -137,6 +140,7 @@ class GeneralBetController(private val service: GeneralBetService) {
 
     @GetMapping("/api/generalbets/has-bet/{username}")
     fun hasBet(@PathVariable("username") username: String) = service.hasBet(username)
+
     @GetMapping("/api/generalbets/user/{username}")
     fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
 
@@ -150,12 +154,17 @@ class GeneralBetController(private val service: GeneralBetService) {
     fun create(@RequestBody body: CreateGeneralBet) = service.create(body)
 
     @PutMapping("/api/generalbets/{generalBetId}")
-    fun update(@PathVariable("generalBetId") generalBetId: Int,
-               @RequestBody body: GeneralBet) = service.update(body.copy(generalBetId = generalBetId))
+    fun update(
+        @PathVariable("generalBetId") generalBetId: Int,
+        @RequestBody body: GeneralBet
+    ) = service.update(body.copy(generalBetId = generalBetId))
 }
 
 @RestController
-class BetController(private val service: BetService) {
+class BetController(
+    private val service: DetailedBetService,
+    private val betService: BetService,
+) {
 
     @GetMapping("/api/bets/user/{username}")
     fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
@@ -163,8 +172,11 @@ class BetController(private val service: BetService) {
     @GetMapping("/api/games/{gameId}/mybet")
     fun getUserBetForGame(@PathVariable("gameId") gameId: Int) = service.getUserBetForGame(gameId)
 
+    @GetMapping("/api/games/{gameId}/bets")
+    fun getBetsForGame(@PathVariable("gameId") gameId: Int) = service.getBetsForGame(gameId)
+
     @PostMapping("/api/bets/")
-    fun create(@RequestBody body: BetCreate) = service.create(body)
+    fun create(@RequestBody body: BetCreate) = betService.create(body)
 
 }
 
