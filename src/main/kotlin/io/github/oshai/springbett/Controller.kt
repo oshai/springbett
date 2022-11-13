@@ -10,31 +10,17 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.ModelAndView
+import java.util.UUID
 
 
 private val logger = KotlinLogging.logger {}
 
 @RestController
-class GeneralControllers(val us: UserService) {
+class GeneralControllers() {
     @GetMapping("/api/generalbets/cansubmitbets/")
     fun canSubmitBets() = true
-
-    @PostMapping("/api/account/register")
-    fun register(@RequestBody body: String) {
-        return us.register(Gson().fromJson(body, Registration::class.java))
-    }
-
-
 }
 
-data class Registration(
-    val username: String,
-    val confirmPassword: String,
-    val password: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
-)
 
 @RestController
 class RedirectController {
@@ -53,7 +39,7 @@ class RedirectController {
 }
 
 @RestController
-class GameController(val service: DetailedGameService) {
+class GameController(private val service: DetailedGameService, private val gameService: GameService) {
     @GetMapping("/api/games")
     fun getDetailedGames(): List<DetailedGame> {
         return service.getAll()
@@ -73,14 +59,58 @@ class GameController(val service: DetailedGameService) {
     fun stadiumGames(@PathVariable("stadiumId") stadiumId: Int): List<DetailedGame> {
         return service.getStadiumGames(stadiumId)
     }
+
+    @PostMapping("/api/games")
+    fun addGame(@RequestBody body: DetailedGame): DetailedGame {
+        return service.createGame(body)
+    }
+
+    @DeleteMapping("/api/games/{gameId}")
+    fun deleteGame(@PathVariable("gameId") gameId: Int) {
+        return gameService.delete(gameId)
+    }
 }
 
 @RestController
-class GeneralBetController(val service: GeneralBetService) {
+class UserManagementController(private val service: UserService) {
+    @PostMapping("/api/account/register")
+    fun register(@RequestBody body: String) {
+        return service.register(Gson().fromJson(body, Registration::class.java))
+    }
+
+    @DeleteMapping("/api/users/{userId}")
+    fun delete(@PathVariable("userId") userId: UUID) {
+        return service.delete(userId)
+    }
+    @PostMapping("/api/users/makeadmin/{userId}")
+    fun makeAdmin(@PathVariable("userId") userId: UUID): User {
+        return service.makeAdmin(userId)
+    }
+    @PostMapping("/api/account/changePassword")
+    fun changePassword(@RequestBody body: String) {
+        return service.changePassword(Gson().fromJson(body, ChangePassword::class.java))
+    }
+}
+
+data class ChangePassword(
+    val confirmPassword: String,
+    val newPassword: String,
+    val oldPassword: String,
+)
+data class Registration(
+    val username: String,
+    val confirmPassword: String,
+    val password: String,
+    val email: String,
+    val firstname: String,
+    val lastname: String,
+)
+
+@RestController
+class GeneralBetController(private val service: GeneralBetService) {
 
     @GetMapping("/api/generalbets/has-bet/{username}")
     fun hasBet(@PathVariable("username") username: String) = service.hasBet(username)
-    ///api/generalbets/user/oshai
     @GetMapping("/api/generalbets/user/{username}")
     fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
     @GetMapping("/api/generalbets")
@@ -95,7 +125,7 @@ class GeneralBetController(val service: GeneralBetService) {
 }
 
 @RestController
-class BetController(val service: BetService) {
+class BetController(private val service: BetService) {
 
     @GetMapping("/api/bets/user/{username}")
     fun getUserBets(@PathVariable("username") username: String) = service.getUserBets(username)
@@ -109,80 +139,71 @@ class BetController(val service: BetService) {
 }
 
 @RestController
-class StadiumController(val service: StadiumService) {
-    companion object {
-        private const val entityName = "stadiums"
-    }
+class StadiumController(private val service: StadiumService) {
 
-    @GetMapping("/api/$entityName")
+    @GetMapping("/api/stadiums")
     fun getAll() = service.getAll()
 
-    @GetMapping("/api/$entityName/{id}")
+    @GetMapping("/api/stadiums/{id}")
     fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
-    @PostMapping("/api/$entityName/create")
+    @PostMapping("/api/stadiums/create")
     fun create(@RequestBody body: Stadium) = service.create(body)
 
-    @PutMapping("/api/$entityName/{id}")
+    @PutMapping("/api/stadiums/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Stadium) =
         service.update(body.copy(stadiumId = id))
 
-    @DeleteMapping("/api/$entityName/{id}")
+    @DeleteMapping("/api/stadiums/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
 @RestController
-class TeamController(val service: TeamService) {
-    companion object {
-        private const val entityName = "teams"
-    }
+class TeamController(private val service: TeamService) {
 
-    @GetMapping("/api/$entityName")
+    @GetMapping("/api/teams")
     fun getAll() = service.getAll()
 
-    @GetMapping("/api/$entityName/{id}")
+    @GetMapping("/api/teams/{id}")
     fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
-    @PostMapping("/api/$entityName/create")
+    @PostMapping("/api/teams/create")
     fun create(@RequestBody body: Team) = service.create(body)
 
-    @PutMapping("/api/$entityName/{id}")
+    @PutMapping("/api/teams/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Team) =
         service.update(body.copy(teamId = id))
 
-    @DeleteMapping("/api/$entityName/{id}")
+    @DeleteMapping("/api/teams/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
 
 @RestController
-class PlayerController(val service: PlayerService) {
-    companion object {
-        private const val entityName = "players"
-    }
+class PlayerController(private val service: PlayerService) {
 
-    @GetMapping("/api/$entityName")
+    @GetMapping("/api/players")
     fun getAll() = service.getAll()
 
-    @GetMapping("/api/$entityName/{id}")
+    @GetMapping("/api/players/{id}")
     fun getOne(@PathVariable("id") id: Int) = service.getOne(id)
 
-    @PostMapping("/api/$entityName/create")
+    @PostMapping("/api/players/create")
     fun create(@RequestBody body: Player) = service.create(body)
 
-    @PutMapping("/api/$entityName/{id}")
+    @PutMapping("/api/players/{id}")
     fun update(@PathVariable("id") id: Int, @RequestBody body: Player) =
         service.update(body.copy(playerId = id))
 
-    @DeleteMapping("/api/$entityName/{id}")
+    @DeleteMapping("/api/players/{id}")
     fun delete(@PathVariable("id") id: Int) = service.delete(id)
 
 }
 
 @RestController
-class UserStatsController(val service: UserStatsService) {
+class UserStatsController(private val service: UserStatsService) {
 
     @GetMapping("/api/users")
     fun getAll() = service.getAll()

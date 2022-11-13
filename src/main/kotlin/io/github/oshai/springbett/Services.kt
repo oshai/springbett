@@ -2,6 +2,7 @@ package io.github.oshai.springbett
 
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.UUID
 
 @Service
@@ -50,25 +51,27 @@ class DetailedGameService(
 
     fun createDetailedGame(gameId: Int): DetailedGame {
         val game = gameService.getOne(gameId)
-        return DetailedGame(
-            gameId = game.id(),
-            ratioWeight = game.ratioWeight,
-            homeRatio = game.homeRatio,
-            tieRatio = game.tieRatio,
-            awayRatio = game.awayRatio,
-            homeTeam = teamService.getOne(game.homeTeamId),
-            awayTeam = teamService.getOne(game.awayTeamId),
-            date = game.startTime.toString(),
-            homeScore = game.homeScore,
-            awayScore = game.awayScore,
-            stadium = stadiumService.getOne(game.stadiumId),
-            userHasBet = false,
-            closeTime = "2022-11-20T14:55:00Z",
-            isOpen = true,
-            isPendingUpdate = false,
-            isBetResolved = false,
-        )
+        return detailedGame(game)
     }
+
+    private fun detailedGame(game: Game) = DetailedGame(
+        gameId = game.id(),
+        ratioWeight = game.ratioWeight,
+        homeRatio = game.homeRatio,
+        tieRatio = game.tieRatio,
+        awayRatio = game.awayRatio,
+        homeTeam = teamService.getOne(game.homeTeamId),
+        awayTeam = teamService.getOne(game.awayTeamId),
+        date = game.startTime.toString(),
+        homeScore = game.homeScore,
+        awayScore = game.awayScore,
+        stadium = stadiumService.getOne(game.stadiumId),
+        userHasBet = false,
+        closeTime = "2022-11-20T14:55:00Z",
+        isOpen = true,
+        isPendingUpdate = false,
+        isBetResolved = false,
+    )
 
     fun getOpenGames(): List<DetailedGame> {
         return getAll().filter { it.isOpen }
@@ -80,6 +83,20 @@ class DetailedGameService(
 
     fun getStadiumGames(stadiumId: Int): List<DetailedGame> {
         return getAll().filter { it.stadium.stadiumId == stadiumId }
+    }
+
+    fun createGame(game: DetailedGame): DetailedGame {
+        return detailedGame(gameService.create(Game(gameId = game.gameId,
+            ratioWeight = game.ratioWeight,
+            homeRatio = game.homeRatio,
+            tieRatio = game.tieRatio,
+            awayRatio = game.awayRatio,
+            homeTeamId = game.homeTeam.teamId!!,
+            awayTeamId = game.awayTeam.teamId!!,
+            startTime = ZonedDateTime.parse(game.date).toLocalDateTime(),
+            homeScore = game.homeScore,
+            awayScore = game.awayScore,
+            stadiumId = game.stadium.stadiumId!!,)))
     }
 
 }
@@ -365,7 +382,25 @@ class UserService(
                 isAdmin = false,
             )
         )
-        credRepository.save(Cred(user.id(), body.password))
+        val cred = Cred(user.id(), body.password).setNew()
+        credRepository.save(cred)
+    }
+
+    fun makeAdmin(userId: UUID): User {
+        return repository.save(getOne(userId).copy(isAdmin = true))
+    }
+
+    fun changePassword(change: ChangePassword) {
+        if (change.newPassword != change.confirmPassword) {
+            throw Exception("this went wrong")
+        }
+        val username = getRequestUserName()
+        val user = getOne(username)
+        val cred = credRepository.findById(user.id()).get()
+        if (cred.pw != change.oldPassword){
+            throw Exception("this went wrong")
+        }
+        credRepository.save(cred.copy(pw = change.newPassword))
     }
 }
 
@@ -397,7 +432,7 @@ class UserStatsService(val users: UserService) {
         yesterdayPoints = 0,
         place = 0,
         placeDiff = 0,
-        result = 0,
+        results = 0,
         marks = 0,
         totalMarks = 0,
     )
@@ -415,7 +450,7 @@ data class UserStatsModel(
     val yesterdayPoints: Int,
     val place: Int,
     val placeDiff: Int,
-    val result: Int,
+    val results: Int,
     val marks: Int,
     val totalMarks: Int,
     //val tournamentBet: Int,

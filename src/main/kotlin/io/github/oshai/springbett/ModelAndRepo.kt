@@ -100,12 +100,20 @@ data class Cred(
     @Id val uuid: UUID,
     val pw: String,
 ): Persistable<UUID> {
+
+    @org.springframework.data.annotation.Transient private var newId: Boolean = false
+    @org.springframework.data.annotation.Transient
+    fun setNew(): Cred {
+        newId = true
+        return this
+    }
+
     override fun getId(): UUID {
         return uuid
     }
 
     override fun isNew(): Boolean {
-        return true
+        return newId
     }
 }
 
