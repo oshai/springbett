@@ -16,13 +16,6 @@ import java.util.UUID
 private val logger = KotlinLogging.logger {}
 
 @RestController
-class GeneralControllers() {
-    @GetMapping("/api/generalbets/cansubmitbets/")
-    fun canSubmitBets() = true
-}
-
-
-@RestController
 class RedirectController {
     @GetMapping(
         "/bets_center",
@@ -113,8 +106,12 @@ class GeneralBetController(private val service: GeneralBetService) {
     fun hasBet(@PathVariable("username") username: String) = service.hasBet(username)
     @GetMapping("/api/generalbets/user/{username}")
     fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
+
+    @GetMapping("/api/generalbets/cansubmitbets/")
+    fun canSubmitBets() = true
+
     @GetMapping("/api/generalbets")
-    fun getAll() = service.getAll()
+    fun getAll() = service.getAllForView()
 
     @PostMapping("/api/generalbets")
     fun create(@RequestBody body: CreateGeneralBet) = service.create(body)

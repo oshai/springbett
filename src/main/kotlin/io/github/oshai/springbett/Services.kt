@@ -86,17 +86,23 @@ class DetailedGameService(
     }
 
     fun createGame(game: DetailedGame): DetailedGame {
-        return detailedGame(gameService.create(Game(gameId = game.gameId,
-            ratioWeight = game.ratioWeight,
-            homeRatio = game.homeRatio,
-            tieRatio = game.tieRatio,
-            awayRatio = game.awayRatio,
-            homeTeamId = game.homeTeam.teamId!!,
-            awayTeamId = game.awayTeam.teamId!!,
-            startTime = ZonedDateTime.parse(game.date).toLocalDateTime(),
-            homeScore = game.homeScore,
-            awayScore = game.awayScore,
-            stadiumId = game.stadium.stadiumId!!,)))
+        return detailedGame(
+            gameService.create(
+                Game(
+                    gameId = game.gameId,
+                    ratioWeight = game.ratioWeight,
+                    homeRatio = game.homeRatio,
+                    tieRatio = game.tieRatio,
+                    awayRatio = game.awayRatio,
+                    homeTeamId = game.homeTeam.teamId!!,
+                    awayTeamId = game.awayTeam.teamId!!,
+                    startTime = ZonedDateTime.parse(game.date).toLocalDateTime(),
+                    homeScore = game.homeScore,
+                    awayScore = game.awayScore,
+                    stadiumId = game.stadium.stadiumId!!,
+                )
+            )
+        )
     }
 
 }
@@ -212,7 +218,6 @@ class PlayerService(val repository: PlayerRepository) {
 class GeneralBetService(
     private val repository: GeneralBetRepository,
     private val us: UserService,
-    // private val detailedGameService: DetailedGameService
 ) {
     fun getOne(id: Int): GeneralBet {
         return repository.findById(id).orElseThrow { Exception("GeneralBet $id not found") }
@@ -220,6 +225,18 @@ class GeneralBetService(
 
     fun getAll(): List<GeneralBet> {
         return repository.findAll().toList()
+    }
+
+    fun getAllForView(): List<ViewGeneralBet> {
+        return getAll().map { bet ->
+            val user = us.getOne(bet.userId)
+            ViewGeneralBet(
+                generalBetId = bet.id(),
+                goldenBootPlayerId = bet.goldenBootPlayerId,
+                winningTeamId = bet.winningTeamId,
+                ownerName = "${user.firstName} ${user.lastName}",
+            )
+        }
     }
 
     fun create(obj: CreateGeneralBet): GeneralBet {
@@ -255,6 +272,17 @@ class GeneralBetService(
         return repository.findAll().first { it.userId == user.userId }
     }
 }
+
+data class ViewGeneralBet(
+    val generalBetId: Int,
+    val goldenBootPlayerId: Int,
+    val winningTeamId: Int,
+    val ownerName: String,
+    val isResolved: Boolean = false,
+    val isClosed: Boolean = false,
+    val points: Int = 0,
+    val closeTime: String = "2022-11-19T00:00:00Z",
+)
 
 data class CreateGeneralBet(
     val goldenBootPlayerId: Int,
@@ -397,7 +425,7 @@ class UserService(
         val username = getRequestUserName()
         val user = getOne(username)
         val cred = credRepository.findById(user.id()).get()
-        if (cred.pw != change.oldPassword){
+        if (cred.pw != change.oldPassword) {
             throw Exception("this went wrong")
         }
         credRepository.save(cred.copy(pw = change.newPassword))
@@ -430,7 +458,7 @@ class UserStatsService(val users: UserService) {
         isAdmin = user.isAdmin,
         points = 0,
         yesterdayPoints = 0,
-        place = 0,
+        place = 1,
         placeDiff = 0,
         results = 0,
         marks = 0,
