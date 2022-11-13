@@ -88,24 +88,38 @@ class DetailedGameService(
     fun createGame(game: DetailedGame): DetailedGame {
         return detailedGame(
             gameService.create(
-                Game(
-                    gameId = game.gameId,
-                    ratioWeight = game.ratioWeight,
-                    homeRatio = game.homeRatio,
-                    tieRatio = game.tieRatio,
-                    awayRatio = game.awayRatio,
-                    homeTeamId = game.homeTeam.teamId!!,
-                    awayTeamId = game.awayTeam.teamId!!,
-                    startTime = ZonedDateTime.parse(game.date).toLocalDateTime(),
-                    homeScore = game.homeScore,
-                    awayScore = game.awayScore,
-                    stadiumId = game.stadium.stadiumId!!,
-                )
+                game.toGame()
+            )
+        )
+    }
+
+    fun getGame(gameId: Int): DetailedGame {
+        return detailedGame(gameService.getOne(gameId))
+    }
+
+    fun updateGame(gameId: Int, game: DetailedGame): DetailedGame {
+        return detailedGame(
+            gameService.update(
+                game.toGame(gameId)
             )
         )
     }
 
 }
+
+private fun DetailedGame.toGame(id: Int? = null) = Game(
+    gameId = id ?: this.gameId,
+    ratioWeight = this.ratioWeight,
+    homeRatio = this.homeRatio,
+    tieRatio = this.tieRatio,
+    awayRatio = this.awayRatio,
+    homeTeamId = this.homeTeam.teamId!!,
+    awayTeamId = this.awayTeam.teamId!!,
+    startTime = ZonedDateTime.parse(this.date).toLocalDateTime(),
+    homeScore = this.homeScore,
+    awayScore = this.awayScore,
+    stadiumId = this.stadium.stadiumId!!,
+)
 
 data class DetailedGame(
     val gameId: Int,

@@ -2,6 +2,11 @@ package io.github.oshai.springbett
 
 import com.google.gson.Gson
 import mu.KotlinLogging
+import org.springframework.boot.web.server.ErrorPage
+import org.springframework.boot.web.server.WebServerFactoryCustomizer
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory
+import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -29,6 +34,22 @@ class RedirectController {
         "/manage_users",
     )
     fun forward() = ModelAndView("forward:/index.html")
+
+    @GetMapping("/notFound")
+    fun forwardNotFound() = ModelAndView("forward:/index.html")
+
+
+    @Bean
+    fun containerCustomizer(): WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+        return WebServerFactoryCustomizer { container: ConfigurableServletWebServerFactory ->
+            container.addErrorPages(
+                ErrorPage(
+                    HttpStatus.NOT_FOUND,
+                    "/notFound"
+                )
+            )
+        }
+    }
 }
 
 @RestController
@@ -51,6 +72,18 @@ class GameController(private val service: DetailedGameService, private val gameS
     @GetMapping("/api/games/Stadium/{stadiumId}")
     fun stadiumGames(@PathVariable("stadiumId") stadiumId: Int): List<DetailedGame> {
         return service.getStadiumGames(stadiumId)
+    }
+
+
+    @GetMapping("/api/games/{gameId}")
+    fun getGame(@PathVariable("gameId") gameId: Int): DetailedGame {
+        return service.getGame(gameId)
+    }
+
+
+    @PutMapping("/api/games/{gameId}")
+    fun updateGame(@PathVariable("gameId") gameId: Int, @RequestBody body: DetailedGame): DetailedGame {
+        return service.updateGame(gameId, body)
     }
 
     @PostMapping("/api/games")
