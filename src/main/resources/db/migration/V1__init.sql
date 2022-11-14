@@ -66,7 +66,7 @@ create table if not exists point_stats
     id serial primary key,
     points_update_index integer not null,
     user_id uuid not null,
-    points_times_100 integer not null,
+    points_times100 integer not null,
     position_in_table integer not null, -- competition position, first place is 1
     results integer not null, -- number of exact bet (guessed the score)
     marks integer not null -- number of correct 1X2

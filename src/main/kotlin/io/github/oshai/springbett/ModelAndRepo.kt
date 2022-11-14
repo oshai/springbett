@@ -7,6 +7,8 @@ import org.springframework.data.repository.CrudRepository
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 
 interface StadiumRepository : CrudRepository<Stadium, Int>
 
@@ -68,7 +70,25 @@ data class GameResult(
     val homeScore: Int,
     val awayScore: Int,
     @Id val gameId: Int,
-)
+) : Persistable<Int> {
+
+    @org.springframework.data.annotation.Transient
+    private var newId: Boolean = false
+
+    @org.springframework.data.annotation.Transient
+    fun setNew(): GameResult {
+        newId = true
+        return this
+    }
+
+    override fun getId(): Int {
+        return gameId
+    }
+
+    override fun isNew(): Boolean {
+        return newId
+    }
+}
 
 interface TournamentRepository : CrudRepository<Tournament, Int>
 

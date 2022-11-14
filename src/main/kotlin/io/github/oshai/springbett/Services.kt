@@ -73,8 +73,8 @@ class DetailedGameService(
     }
 
     private fun detailedGame(game: Game): DetailedGame {
-        val result: GameResult? = gameResultRepository.findById(game.id()).orElseGet(null)
-        val status = game.calcStatus(betService, result)
+        val result: GameResult? = gameResultRepository.findById(game.id()).orElseGet { null }
+        val status = calcStatus(game, betService.getUserBetForGameOrNull(gameId = game.id()), result)
         return DetailedGame(
             gameId = game.id(),
             ratioWeight = game.ratioWeight,
@@ -132,47 +132,27 @@ class DetailedGameService(
             return
         }
         logger.info { "updating result" }
-        gameResultRepository.save(
+        val isNew = gameResultRepository.findById(gameId).isEmpty
+        val gameResult = gameResultRepository.save(
             GameResult(
                 gameId = gameId,
                 homeScore = game.homeScore,
                 awayScore = game.awayScore
-            )
+            ).apply { if (isNew) this.setNew() }
         )
         val tournament = tournamentService.getOne(1)
         val updateIndex = tournament.currentPointsUpdate + 1
         val todayPointStats = userService.getAll().map { user ->
             val yesterdayPointStats: PointStats? = pointStatsService.getAll()
                 .firstOrNull { it.userId == user.id() && it.pointsUpdateIndex == tournament.currentPointsUpdate }
-            val userBet = betService.getUserBetForGameOrNull(gameId)
-            val gameMark = scoreToMark(game.homeScore, game.awayScore)
-            val betMark = userBet?.let { scoreToMark(it.homeScore, it.awayScore) }
-            var todayPoints = 0.0
-            var mark = 0
-            var result = 0
-            if (gameMark == betMark) {
-                mark = 1
-                todayPoints += when {
-                    game.homeScore > game.awayScore -> game.homeRatio
-                    game.homeScore < game.awayScore -> game.awayRatio
-                    else -> game.tieRatio
-                }.toDouble()
-                todayPoints *= game.ratioWeight.toDouble();
-                if (game.homeScore == userBet.homeScore && game.awayScore == userBet.awayScore) {
-                    result = 1
-                    val totalGoals = game.awayScore + game.homeScore;
-                    todayPoints *= when {
-                        totalGoals < 2 -> 1.1
-                        totalGoals < 4 -> 1.2
-                        else -> 1.3
-                    }
-                }
-            }
+            val userBet = betService.getUserBetForGameOrNull(gameId, user.username)
+            val status = calcStatus(game.toGame(), userBet, gameResult)
             val todayPointStats = PointStats(
-                pointsTimes100 = (yesterdayPointStats?.pointsTimes100 ?: 0) + (todayPoints * 100).toInt(),
+                pointsTimes100 = (yesterdayPointStats?.pointsTimes100 ?: 0) + (status.points.multiply(BigDecimal(100))
+                    .toInt()),
                 positionInTable = 0,
-                results = (yesterdayPointStats?.results ?: 0) + result,
-                marks = (yesterdayPointStats?.marks ?: 0) + mark,
+                results = (yesterdayPointStats?.results ?: 0) + if (status.resultWin) 1 else 0,
+                marks = (yesterdayPointStats?.marks ?: 0) + if (status.gameMarkWin) 1 else 0,
                 pointsUpdateIndex = updateIndex,
                 userId = user.id(),
             )
@@ -203,17 +183,43 @@ fun scoreToMark(homeScore: Int, awayScore: Int): Mark {
     }
 }
 
-fun Game.calcStatus(betService: BetService, result: GameResult?): GameState {
-    val closeTime = this.date.minusMinutes(closeTimeMinutes)
+fun calcStatus(game: Game, userBet: Bet?, gameResult: GameResult?): GameState {
+    val closeTime = game.date.minusMinutes(closeTimeMinutes)
     val closeTimeZoned = closeTime.atZone(ZoneId.of("UTC"))
     val isOpen = closeTimeZoned.isAfter(ZonedDateTime.now())
-    val userHasBet = betService.getUserBetForGameOrNull(gameId = this.id()) != null
+    val userHasBet = userBet != null
+    val gameMark = gameResult?.let { scoreToMark(it.homeScore, it.awayScore) }
+    val betMark = userBet?.let { scoreToMark(it.homeScore, it.awayScore) }
+    var todayPoints = 0.0
+    var mark = false
+    var result = false
+    if (gameResult != null && betMark != null && gameMark == betMark) {
+        mark = true
+        todayPoints += when {
+            gameResult.homeScore > gameResult.awayScore -> game.homeRatio
+            gameResult.homeScore < gameResult.awayScore -> game.awayRatio
+            else -> game.tieRatio
+        }.toDouble()
+        todayPoints *= game.ratioWeight.toDouble();
+        if (gameResult.homeScore == userBet.homeScore && gameResult.awayScore == userBet.awayScore) {
+            result = true
+            val totalGoals = gameResult.awayScore + gameResult.homeScore;
+            todayPoints *= when {
+                totalGoals < 2 -> 1.1
+                totalGoals < 4 -> 1.2
+                else -> 1.3
+            }
+        }
+    }
     return GameState(
         isOpen = isOpen,
-        isPendingUpdate = !isOpen && result == null,
-        isBetResolved = result != null,
+        isPendingUpdate = !isOpen && gameResult == null,
+        isBetResolved = gameResult != null,
         closeTime = closeTime.toIso(),
         userHasBet = userHasBet,
+        gameMarkWin = mark,
+        resultWin = result,
+        points = BigDecimal((todayPoints * 100).toInt()).divide(BigDecimal(100))
     )
 }
 
@@ -222,7 +228,10 @@ data class GameState(
     val isPendingUpdate: Boolean,
     val isBetResolved: Boolean,
     val userHasBet: Boolean,
-    val closeTime: String
+    val closeTime: String,
+    val gameMarkWin: Boolean,
+    val points: BigDecimal,
+    val resultWin: Boolean,
 )
 
 private fun DetailedGame.toGame(id: Int? = null) = Game(
@@ -481,7 +490,11 @@ class BetService(
     }
 
     fun getUserBetForGameOrNull(gameId: Int): Bet? {
-        val bets = getUserBets(getRequestUserName())
+        return getUserBetForGameOrNull(gameId, getRequestUserName())
+    }
+
+    fun getUserBetForGameOrNull(gameId: Int, username: String): Bet? {
+        val bets = getUserBets(username)
         return bets.firstOrNull { it.gameId == gameId }
     }
 
@@ -502,18 +515,14 @@ class BetService(
 class DetailedBetService(
     private val br: BetRepository,
     private val us: UserService,
+    private val gr: GameResultRepository,
     private val detailedGameService: DetailedGameService
 ) {
     fun getUserBets(username: String): List<DetailedBet> {
         val user = us.getOne(username)
         return br.findAll().filter { it.userId == user.userId }.map { bet ->
-            DetailedBet(
-                betId = bet.id(),
-                homeScore = bet.homeScore,
-                awayScore = bet.awayScore,
-                game = detailedGameService.createDetailedGame(bet.gameId),
-                user = user,
-            )
+            val result: GameResult? = gr.findById(bet.gameId).orElseGet { null }
+            createDetailedBet(bet.gameId, bet, user, result)
         }
     }
 
@@ -527,36 +536,38 @@ class DetailedBetService(
         val username = getRequestUserName()
         val user = us.getOne(username)
         val bet = getUserBetForGameOrNull(gameId)
-        if (bet == null) {
-            return DetailedBet(
-                betId = -1,
-                homeScore = null,
-                awayScore = null,
-                game = detailedGameService.createDetailedGame(gameId),
-                user = user,
-            )
-        } else {
-            return DetailedBet(
-                betId = bet.id(),
-                homeScore = bet.homeScore,
-                awayScore = bet.awayScore,
-                game = detailedGameService.createDetailedGame(bet.gameId),
-                user = user,
-            )
-        }
+        val result: GameResult? = gr.findById(gameId).orElseGet { null }
+        return createDetailedBet(gameId, bet, user, result)
     }
 
     fun getBetsForGame(gameId: Int): List<DetailedBet> {
+        val result: GameResult? = gr.findById(gameId).orElseGet { null }
         return br.findAll().filter { it.gameId == gameId }.map { bet ->
             val user = us.getOne(bet.userId)
-            DetailedBet(
-                betId = bet.id(),
-                homeScore = bet.homeScore,
-                awayScore = bet.awayScore,
-                game = detailedGameService.createDetailedGame(bet.gameId),
-                user = user,
-            )
+            createDetailedBet(bet.gameId, bet, user, result)
         }
+    }
+
+    private fun createDetailedBet(
+        gameId: Int,
+        bet: Bet?,
+        user: User,
+        gameResult: GameResult?
+    ): DetailedBet {
+        val game = detailedGameService.createDetailedGame(gameId)
+        val status = calcStatus(game.toGame(), bet, gameResult)
+        return DetailedBet(
+            betId = bet?.betId ?: -1,
+            homeScore = bet?.homeScore,
+            awayScore = bet?.awayScore,
+            game = game,
+            user = user,
+            gameMarkWin = status.gameMarkWin,
+            isOpenForBetting = status.isOpen,
+            isResolved = status.isBetResolved,
+            points = status.points.toDouble(),
+            resultWin = status.resultWin,
+        )
     }
 
 }
@@ -570,7 +581,7 @@ data class DetailedBet(
     val gameMarkWin: Boolean = false,
     val isOpenForBetting: Boolean = true,
     val isResolved: Boolean = false,
-    val points: Int = 0,
+    val points: Double = 0.0,
     val resultWin: Boolean = false,
 )
 
