@@ -8,8 +8,15 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
+
+private val closeTimeMinutes: Long = 5
+val monkeyUsername = "monkey"
+val winnerUsername = "winner"
+val loserUsername = "loser"
+val zeroUsername = "zero"
 
 @Service
 class StadiumService(val repository: StadiumRepository) {
@@ -46,8 +53,6 @@ class StadiumService(val repository: StadiumRepository) {
 fun LocalDateTime.toIso(): String {
     return this.atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT)
 }
-
-private val closeTimeMinutes: Long = 5
 
 @Service
 class DetailedGameService(
@@ -269,7 +274,11 @@ data class DetailedGame(
 )
 
 @Service
-class GameService(val repository: GameRepository) {
+class GameService(
+    val repository: GameRepository,
+    val betRepository: BetRepository,
+    val userService: UserService,
+    ) {
     fun getOne(id: Int): Game {
         return repository.findById(id).orElseThrow { Exception("game $id not found") }
     }
@@ -279,7 +288,33 @@ class GameService(val repository: GameRepository) {
     }
 
     fun create(obj: Game): Game {
-        return repository.save(obj.copy(gameId = null))
+        val createdGame = repository.save(obj.copy(gameId = null))
+        addStaticBets(createdGame)
+        return createdGame
+    }
+
+    private fun addStaticBets(game: Game) {
+        val homeOddsBetter = game.homeRatio.toDouble() < game.awayRatio.toDouble() // lower ration better odds
+        betRepository.save(Bet(userId = userService.getOne(monkeyUsername).id(),
+            gameId = game.id(),
+            homeScore = Random.Default.nextInt(5),
+            awayScore = Random.Default.nextInt(5),
+        ))
+        betRepository.save(Bet(userId = userService.getOne(winnerUsername).id(),
+            gameId = game.id(),
+            homeScore = if (homeOddsBetter) 1 else 0,
+            awayScore = if (homeOddsBetter) 0 else 1,
+        ))
+        betRepository.save(Bet(userId = userService.getOne(loserUsername).id(),
+            gameId = game.id(),
+            homeScore = if (homeOddsBetter) 0 else 1,
+            awayScore = if (homeOddsBetter) 1 else 0,
+        ))
+        betRepository.save(Bet(userId = userService.getOne(zeroUsername).id(),
+            gameId = game.id(),
+            homeScore = 0,
+            awayScore = 0,
+        ))
     }
 
     fun update(obj: Game): Game {
