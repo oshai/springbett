@@ -56,12 +56,56 @@ data class Game(
     val homeRatio: BigDecimal,
     val tieRatio: BigDecimal,
     val awayRatio: BigDecimal,
-    val homeScore: Int? = null,
-    val awayScore: Int? = null,
     @Id val gameId: Int? = null,
 ) {
     fun id() = gameId!!
 }
+
+interface GameResultRepository : CrudRepository<GameResult, Int>
+
+@Table("game_result")
+data class GameResult(
+    val homeScore: Int,
+    val awayScore: Int,
+    @Id val gameId: Int,
+)
+
+interface TournamentRepository : CrudRepository<Tournament, Int>
+
+@Table("tournament")
+data class Tournament(
+    @Id val tournamentId: Int,
+    val startTime: LocalDateTime,
+    val endTime: LocalDateTime,
+    val currentPointsUpdate: Int,
+) : Persistable<Int> {
+
+    @org.springframework.data.annotation.Transient
+    private var newId: Boolean = false
+
+    @org.springframework.data.annotation.Transient
+    fun setNew(): Tournament {
+        newId = true
+        return this
+    }
+
+    override fun getId(): Int {
+        return tournamentId
+    }
+
+    override fun isNew(): Boolean {
+        return newId
+    }
+}
+
+interface TournamentResultRepository : CrudRepository<TournamentResult, Int>
+
+@Table("tournament_result")
+data class TournamentResult(
+    @Id val tournamentId: Int,
+    val winningTeamId: Int,
+    val goldenBootPlayerId: Int,
+)
 
 interface PlayerRepository : CrudRepository<Player, Int>
 
@@ -99,9 +143,11 @@ interface CredRepository : CrudRepository<Cred, UUID>
 data class Cred(
     @Id val uuid: UUID,
     val pw: String,
-): Persistable<UUID> {
+) : Persistable<UUID> {
 
-    @org.springframework.data.annotation.Transient private var newId: Boolean = false
+    @org.springframework.data.annotation.Transient
+    private var newId: Boolean = false
+
     @org.springframework.data.annotation.Transient
     fun setNew(): Cred {
         newId = true
@@ -120,10 +166,27 @@ data class Cred(
 interface GeneralBetRepository : CrudRepository<GeneralBet, Int>
 
 @Table("general_bet")
-data class GeneralBet(val winningTeamId: Int,
-                      val goldenBootPlayerId: Int,
-                      val userId: UUID,
-                      @Id val generalBetId: Int? = null
+data class GeneralBet(
+    val winningTeamId: Int,
+    val goldenBootPlayerId: Int,
+    val userId: UUID,
+    @Id val generalBetId: Int? = null
 ) {
     fun id() = generalBetId!!
 }
+
+interface PointStatsRepository : CrudRepository<PointStats, Int>
+
+@Table("point_stats") // each row is user stat in a specific point in time (pointsUpdateIndex)
+data class PointStats(
+    val pointsTimes100: Int,
+    val positionInTable: Int,
+    val results: Int,
+    val marks: Int,
+    val pointsUpdateIndex: Int,
+    val userId: UUID,
+    @Id val id: Int? = null
+) {
+    fun id() = id!!
+}
+

@@ -145,7 +145,7 @@ class GeneralBetController(private val service: GeneralBetService) {
     fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
 
     @GetMapping("/api/generalbets/cansubmitbets/")
-    fun canSubmitBets() = true
+    fun canSubmitBets() = service.canSubmitBets()
 
     @GetMapping("/api/generalbets")
     fun getAll() = service.getAllForView()

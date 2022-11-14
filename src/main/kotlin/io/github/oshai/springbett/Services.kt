@@ -1,5 +1,6 @@
 package io.github.oshai.springbett
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -7,6 +8,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+
+private val logger = KotlinLogging.logger {}
 
 @Service
 class StadiumService(val repository: StadiumRepository) {
@@ -49,9 +52,13 @@ private val closeTimeMinutes: Long = 5
 @Service
 class DetailedGameService(
     private val gameService: GameService,
+    private val gameResultRepository: GameResultRepository,
+    private val pointStatsService: PointStatsService,
     private val teamService: TeamService,
     private val stadiumService: StadiumService,
     private val betService: BetService,
+    private val tournamentService: TournamentService,
+    private val userService: UserService,
 ) {
 
     fun getAll(): List<DetailedGame> {
@@ -66,7 +73,8 @@ class DetailedGameService(
     }
 
     private fun detailedGame(game: Game): DetailedGame {
-        val status = game.calcStatus(betService)
+        val result: GameResult? = gameResultRepository.findById(game.id()).orElseGet(null)
+        val status = game.calcStatus(betService, result)
         return DetailedGame(
             gameId = game.id(),
             ratioWeight = game.ratioWeight,
@@ -76,8 +84,8 @@ class DetailedGameService(
             homeTeam = teamService.getOne(game.homeTeamId),
             awayTeam = teamService.getOne(game.awayTeamId),
             date = game.date.toString(),
-            homeScore = game.homeScore,
-            awayScore = game.awayScore,
+            homeScore = result?.homeScore,
+            awayScore = result?.awayScore,
             stadium = stadiumService.getOne(game.stadiumId),
             userHasBet = status.userHasBet,
             closeTime = status.closeTime,
@@ -112,24 +120,98 @@ class DetailedGameService(
     }
 
     fun updateGame(gameId: Int, game: DetailedGame): DetailedGame {
-        return detailedGame(
-            gameService.update(
-                game.toGame(gameId)
+        val updatedGame = gameService.update(game.toGame(gameId))
+        updateResult(gameId, game)
+        return detailedGame(updatedGame)
+    }
+
+    // TODO special update for special users (they don't have a bet, or add a bet for them when creating a game)
+    @Synchronized // TODO in transaction
+    private fun updateResult(gameId: Int, game: DetailedGame) {
+        if (game.homeScore == null || game.awayScore == null) {
+            return
+        }
+        logger.info { "updating result" }
+        gameResultRepository.save(
+            GameResult(
+                gameId = gameId,
+                homeScore = game.homeScore,
+                awayScore = game.awayScore
             )
         )
+        val tournament = tournamentService.getOne(1)
+        val updateIndex = tournament.currentPointsUpdate + 1
+        val todayPointStats = userService.getAll().map { user ->
+            val yesterdayPointStats: PointStats? = pointStatsService.getAll()
+                .firstOrNull { it.userId == user.id() && it.pointsUpdateIndex == tournament.currentPointsUpdate }
+            val userBet = betService.getUserBetForGameOrNull(gameId)
+            val gameMark = scoreToMark(game.homeScore, game.awayScore)
+            val betMark = userBet?.let { scoreToMark(it.homeScore, it.awayScore) }
+            var todayPoints = 0.0
+            var mark = 0
+            var result = 0
+            if (gameMark == betMark) {
+                mark = 1
+                todayPoints += when {
+                    game.homeScore > game.awayScore -> game.homeRatio
+                    game.homeScore < game.awayScore -> game.awayRatio
+                    else -> game.tieRatio
+                }.toDouble()
+                todayPoints *= game.ratioWeight.toDouble();
+                if (game.homeScore == userBet.homeScore && game.awayScore == userBet.awayScore) {
+                    result = 1
+                    val totalGoals = game.awayScore + game.homeScore;
+                    todayPoints *= when {
+                        totalGoals < 2 -> 1.1
+                        totalGoals < 4 -> 1.2
+                        else -> 1.3
+                    }
+                }
+            }
+            val todayPointStats = PointStats(
+                pointsTimes100 = (yesterdayPointStats?.pointsTimes100 ?: 0) + (todayPoints * 100).toInt(),
+                positionInTable = 0,
+                results = (yesterdayPointStats?.results ?: 0) + result,
+                marks = (yesterdayPointStats?.marks ?: 0) + mark,
+                pointsUpdateIndex = updateIndex,
+                userId = user.id(),
+            )
+            todayPointStats
+        }
+            .sortedByDescending { it.pointsTimes100 }
+            .mapIndexed { index, stats ->
+                stats.copy(positionInTable = index + 1)
+            }
+        todayPointStats.forEach {
+            pointStatsService.createOrUpdate(it)
+        }
     }
 
 }
 
-fun Game.calcStatus(betService: BetService): GameState {
+enum class Mark {
+    Home,
+    Tie,
+    Away,
+}
+
+fun scoreToMark(homeScore: Int, awayScore: Int): Mark {
+    return when {
+        homeScore > awayScore -> Mark.Home
+        homeScore < awayScore -> Mark.Away
+        else -> Mark.Tie
+    }
+}
+
+fun Game.calcStatus(betService: BetService, result: GameResult?): GameState {
     val closeTime = this.date.minusMinutes(closeTimeMinutes)
     val closeTimeZoned = closeTime.atZone(ZoneId.of("UTC"))
     val isOpen = closeTimeZoned.isAfter(ZonedDateTime.now())
     val userHasBet = betService.getUserBetForGameOrNull(gameId = this.id()) != null
     return GameState(
         isOpen = isOpen,
-        isPendingUpdate = !isOpen && this.homeScore == null,
-        isBetResolved = this.homeScore != null,
+        isPendingUpdate = !isOpen && result == null,
+        isBetResolved = result != null,
         closeTime = closeTime.toIso(),
         userHasBet = userHasBet,
     )
@@ -155,8 +237,6 @@ private fun DetailedGame.toGame(id: Int? = null) = Game(
         ZonedDateTime.parse(this.date).toLocalDateTime()
     else
         LocalDateTime.parse(this.date),
-    homeScore = this.homeScore,
-    awayScore = this.awayScore,
     stadiumId = this.stadium.stadiumId!!,
 )
 
@@ -242,6 +322,36 @@ class TeamService(val repository: TeamRepository) {
 }
 
 @Service
+class TournamentService(val repository: TournamentRepository) {
+    fun getOne(id: Int): Tournament {
+        return repository.findById(id).orElseThrow { Exception("tournament $id not found") }
+    }
+
+    fun getAll(): List<Tournament> {
+        return repository.findAll().toList()
+    }
+
+    fun create(obj: Tournament): Tournament {
+        if (repository.existsById(obj.tournamentId)) {
+            throw Exception("tournament ${obj.tournamentId} already exists")
+        }
+        return repository.save(obj)
+    }
+
+    fun update(obj: Tournament): Tournament {
+        if (!repository.existsById(obj.tournamentId)) {
+            throw Exception("tournament ${obj.tournamentId} do not exists")
+        }
+        return repository.save(obj)
+    }
+
+    fun delete(id: Int) {
+        repository.deleteById(id)
+    }
+
+}
+
+@Service
 class PlayerService(val repository: PlayerRepository) {
     fun getOne(id: Int): Player {
         return repository.findById(id).orElseThrow { Exception("player $id not found") }
@@ -324,8 +434,17 @@ class GeneralBetService(
         val user = us.getOne(username)
         return repository.findAll().first { it.userId == user.userId }
     }
+
+    fun canSubmitBets(): Boolean {
+        return true
+    }
 }
 
+//data class ResolveGeneralBet(
+//    val playerIsRight { get; set; }
+//
+//    public Boolean TeamIsRight { get; set; }
+//}
 data class ViewGeneralBet(
     val generalBetId: Int,
     val goldenBootPlayerId: Int,
@@ -532,37 +651,49 @@ class UserService(
 }
 
 @Service
-class UserStatsService(val users: UserService) {
+class UserStatsService(
+    val userService: UserService,
+    val pointStatsService: PointStatsService
+) {
 
     fun getAll(): List<UserStatsModel> {
-        return users.getAll().map { mapUser(it) }
+        return userService.getAll().map { mapUser(it) }
     }
 
     fun getTable(): List<UserStatsModel> {
-        return users.getAll().map { mapUser(it) }
+        return userService.getAll().map { mapUser(it) }
     }
 
     fun getUserStats(username: String): UserStatsModel {
-        val user = users.getOne(username)
+        val user = userService.getOne(username)
         return mapUser(user)
     }
 
     private fun mapUser(
         user: User
-    ) = UserStatsModel(
-        username = user.username,
-        name = "${user.firstName} ${user.lastName}",
-        id = user.userId.toString(),
-        email = user.email,
-        isAdmin = user.isAdmin,
-        points = 0,
-        yesterdayPoints = 0,
-        place = 1,
-        placeDiff = 0,
-        results = 0,
-        marks = 0,
-        totalMarks = 0,
-    )
+    ): UserStatsModel {
+        val userPointList = pointStatsService.getAll().filter { it.userId == user.userId }
+        val userPointCurrent: PointStats? = userPointList.maxByOrNull { it.pointsUpdateIndex }
+        val userPointsPrevious: PointStats? =
+            userPointCurrent?.let { curr -> userPointList.firstOrNull { prev -> curr.pointsUpdateIndex - 1 == prev.pointsUpdateIndex } }
+        val place = userPointCurrent?.positionInTable ?: 1
+        val placePrev = userPointsPrevious?.positionInTable ?: place
+        return UserStatsModel(
+            username = user.username,
+            name = "${user.firstName} ${user.lastName}",
+            id = user.userId.toString(),
+            email = user.email,
+            isAdmin = user.isAdmin,
+            points = userPointCurrent?.let { BigDecimal(it.pointsTimes100).divide(BigDecimal(100)) } ?: BigDecimal.ZERO,
+            yesterdayPoints = userPointsPrevious?.let { BigDecimal(it.pointsTimes100).divide(BigDecimal(100)) }
+                ?: BigDecimal.ZERO,
+            place = place,
+            placeDiff = placePrev - place,
+            results = userPointCurrent?.results ?: 0,
+            marks = userPointCurrent?.marks ?: 0,
+            // totalMarks = 0,
+        )
+    }
 
 
 }
@@ -573,13 +704,50 @@ data class UserStatsModel(
     val id: String,
     val email: String,
     val isAdmin: Boolean,
-    val points: Int,
-    val yesterdayPoints: Int,
+    val points: BigDecimal,
+    val yesterdayPoints: BigDecimal,
     val place: Int,
     val placeDiff: Int,
     val results: Int,
     val marks: Int,
-    val totalMarks: Int,
+    // val totalMarks: Int,
     //val tournamentBet: Int,
 
 )
+
+@Service
+class PointStatsService(private val repository: PointStatsRepository) {
+    fun getOne(id: Int): PointStats {
+        return repository.findById(id).orElseThrow { Exception("points stats $id not found") }
+    }
+
+    fun getAll(): List<PointStats> {
+        return repository.findAll().toList()
+    }
+
+    fun create(obj: PointStats): PointStats {
+        return repository.save(obj.copy(id = null))
+    }
+
+    fun createOrUpdate(obj: PointStats): PointStats {
+        val current =
+            getAll().firstOrNull() { it.userId == obj.userId && it.pointsUpdateIndex == obj.pointsUpdateIndex }
+        return if (current != null) {
+            update(obj.copy(id = current.id))
+        } else {
+            create(obj)
+        }
+
+    }
+
+    fun update(obj: PointStats): PointStats {
+        if (!repository.existsById(obj.id())) {
+            throw Exception("point stats ${obj.id()} do not exists")
+        }
+        return repository.save(obj)
+    }
+
+    fun delete(id: Int) {
+        repository.deleteById(id)
+    }
+}
