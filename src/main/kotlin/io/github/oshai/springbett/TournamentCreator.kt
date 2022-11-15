@@ -25,7 +25,7 @@ class TournamentCreator(
     private fun createTournament() {
         tournamentService.create(
             Tournament(
-                tournamentId = 1,
+                tournamentId = tournamentId,
                 currentPointsUpdate = 0,
                 startTime = ZonedDateTime.of(2022, 11, 20, 18, 0, 0, 0, ZoneId.of("IST", ZoneId.SHORT_IDS))
                     .withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime(), //20/11/2022

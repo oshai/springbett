@@ -125,7 +125,25 @@ data class TournamentResult(
     @Id val tournamentId: Int,
     val winningTeamId: Int,
     val goldenBootPlayerId: Int,
-)
+) : Persistable<Int> {
+
+    @org.springframework.data.annotation.Transient
+    private var newId: Boolean = false
+
+    @org.springframework.data.annotation.Transient
+    fun setNew(): TournamentResult {
+        newId = true
+        return this
+    }
+
+    override fun getId(): Int {
+        return tournamentId
+    }
+
+    override fun isNew(): Boolean {
+        return newId
+    }
+}
 
 interface PlayerRepository : CrudRepository<Player, Int>
 

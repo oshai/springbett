@@ -145,7 +145,7 @@ class GeneralBetController(private val service: GeneralBetService) {
     fun getBet(@PathVariable("username") username: String) = service.getBetForUser(username)
 
     @GetMapping("/api/generalbets/cansubmitbets/")
-    fun canSubmitBets() = service.canSubmitBets()
+    fun canSubmitBets() = service.canSubmitGeneralBets()
 
     @GetMapping("/api/generalbets")
     fun getAll() = service.getAllForView()
@@ -158,6 +158,12 @@ class GeneralBetController(private val service: GeneralBetService) {
         @PathVariable("generalBetId") generalBetId: Int,
         @RequestBody body: GeneralBet
     ) = service.update(body.copy(generalBetId = generalBetId))
+
+    @PutMapping("/api/generalbets/{generalBetId}/resolve")
+    fun resolveBet(
+        @PathVariable("generalBetId") generalBetId: Int,
+        @RequestBody body: ResolveGeneralBetRequest
+    ) = service.resolveBet(generalBetId, body)
 }
 
 @RestController

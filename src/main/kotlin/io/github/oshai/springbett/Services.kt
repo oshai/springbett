@@ -17,6 +17,7 @@ val monkeyUsername = "monkey"
 val winnerUsername = "winner"
 val loserUsername = "loser"
 val zeroUsername = "zero"
+val tournamentId = 100
 
 @Service
 class StadiumService(val repository: StadiumRepository) {
@@ -145,7 +146,7 @@ class DetailedGameService(
                 awayScore = game.awayScore
             ).apply { if (isNew) this.setNew() }
         )
-        val tournament = tournamentService.getOne(1)
+        val tournament = tournamentService.getOne(tournamentId)
         val updateIndex = tournament.currentPointsUpdate + 1
         val todayPointStats = userService.getAll().map { user ->
             val yesterdayPointStats: PointStats? = pointStatsService.getAll()
@@ -167,6 +168,7 @@ class DetailedGameService(
             .mapIndexed { index, stats ->
                 stats.copy(positionInTable = index + 1)
             }
+            .sortedBy { it.positionInTable }
         todayPointStats.forEach {
             pointStatsService.createOrUpdate(it)
         }
@@ -278,7 +280,7 @@ class GameService(
     val repository: GameRepository,
     val betRepository: BetRepository,
     val userService: UserService,
-    ) {
+) {
     fun getOne(id: Int): Game {
         return repository.findById(id).orElseThrow { Exception("game $id not found") }
     }
@@ -295,26 +297,38 @@ class GameService(
 
     private fun addStaticBets(game: Game) {
         val homeOddsBetter = game.homeRatio.toDouble() < game.awayRatio.toDouble() // lower ration better odds
-        betRepository.save(Bet(userId = userService.getOne(monkeyUsername).id(),
-            gameId = game.id(),
-            homeScore = Random.Default.nextInt(5),
-            awayScore = Random.Default.nextInt(5),
-        ))
-        betRepository.save(Bet(userId = userService.getOne(winnerUsername).id(),
-            gameId = game.id(),
-            homeScore = if (homeOddsBetter) 1 else 0,
-            awayScore = if (homeOddsBetter) 0 else 1,
-        ))
-        betRepository.save(Bet(userId = userService.getOne(loserUsername).id(),
-            gameId = game.id(),
-            homeScore = if (homeOddsBetter) 0 else 1,
-            awayScore = if (homeOddsBetter) 1 else 0,
-        ))
-        betRepository.save(Bet(userId = userService.getOne(zeroUsername).id(),
-            gameId = game.id(),
-            homeScore = 0,
-            awayScore = 0,
-        ))
+        betRepository.save(
+            Bet(
+                userId = userService.getOne(monkeyUsername).id(),
+                gameId = game.id(),
+                homeScore = Random.Default.nextInt(5),
+                awayScore = Random.Default.nextInt(5),
+            )
+        )
+        betRepository.save(
+            Bet(
+                userId = userService.getOne(winnerUsername).id(),
+                gameId = game.id(),
+                homeScore = if (homeOddsBetter) 1 else 0,
+                awayScore = if (homeOddsBetter) 0 else 1,
+            )
+        )
+        betRepository.save(
+            Bet(
+                userId = userService.getOne(loserUsername).id(),
+                gameId = game.id(),
+                homeScore = if (homeOddsBetter) 0 else 1,
+                awayScore = if (homeOddsBetter) 1 else 0,
+            )
+        )
+        betRepository.save(
+            Bet(
+                userId = userService.getOne(zeroUsername).id(),
+                gameId = game.id(),
+                homeScore = 0,
+                awayScore = 0,
+            )
+        )
     }
 
     fun update(obj: Game): Game {
@@ -366,7 +380,11 @@ class TeamService(val repository: TeamRepository) {
 }
 
 @Service
-class TournamentService(val repository: TournamentRepository) {
+class TournamentService(
+    private val repository: TournamentRepository,
+    private val generalBetService: GeneralBetService,
+    private val userService: UserService,
+) {
     fun getOne(id: Int): Tournament {
         return repository.findById(id).orElseThrow { Exception("tournament $id not found") }
     }
@@ -379,7 +397,36 @@ class TournamentService(val repository: TournamentRepository) {
         if (repository.existsById(obj.tournamentId)) {
             throw Exception("tournament ${obj.tournamentId} already exists")
         }
-        return repository.save(obj)
+        val created = repository.save(obj)
+        generalBetService.create(
+            GeneralBet(
+                userId = userService.getOne(monkeyUsername).id(),
+                winningTeamId = 2,
+                goldenBootPlayerId = 2,
+                )
+        )
+        generalBetService.create(
+            GeneralBet(
+                userId = userService.getOne(winnerUsername).id(),
+                winningTeamId = 2,
+                goldenBootPlayerId = 2,
+                )
+        )
+        generalBetService.create(
+            GeneralBet(
+                userId = userService.getOne(loserUsername).id(),
+                winningTeamId = 2,
+                goldenBootPlayerId = 2,
+                )
+        )
+        generalBetService.create(
+            GeneralBet(
+                userId = userService.getOne(zeroUsername).id(),
+                winningTeamId = 2,
+                goldenBootPlayerId = 2,
+                )
+        )
+        return created
     }
 
     fun update(obj: Tournament): Tournament {
@@ -424,6 +471,8 @@ class PlayerService(val repository: PlayerRepository) {
 @Service
 class GeneralBetService(
     private val repository: GeneralBetRepository,
+    private val tournamentRepository: TournamentRepository,
+    private val tournamentResultRepository: TournamentResultRepository,
     private val us: UserService,
 ) {
     fun getOne(id: Int): GeneralBet {
@@ -458,6 +507,10 @@ class GeneralBetService(
         )
     }
 
+    fun create(obj: GeneralBet): GeneralBet {
+        return repository.save(obj.copy(generalBetId = null))
+    }
+
     fun update(obj: GeneralBet): GeneralBet {
         if (!repository.existsById(obj.generalBetId!!)) {
             throw Exception("player ${obj.generalBetId} do not exists")
@@ -479,16 +532,43 @@ class GeneralBetService(
         return repository.findAll().first { it.userId == user.userId }
     }
 
-    fun canSubmitBets(): Boolean {
-        return true
+    fun canSubmitGeneralBets(): Boolean {
+        val tournament = tournamentRepository.findById(tournamentId).get()
+        val closeTime = tournament.startTime.minusMinutes(closeTimeMinutes)
+        val closeTimeZoned = closeTime.atZone(ZoneId.of("UTC"))
+        return closeTimeZoned.isAfter(ZonedDateTime.now())
+    }
+
+    fun resolveBet(generalBetId: Int, request: ResolveGeneralBetRequest) {
+        val generalBet = getOne(generalBetId)
+        val tournamentBet = tournamentResultRepository.findById(tournamentId).orElseGet { null }
+        val winningTeamId = when {
+            request.teamIsRight -> generalBet.winningTeamId
+            (tournamentBet?.winningTeamId ?: -1) >= 0  -> generalBet.winningTeamId
+            else -> -1
+        }
+        val goldenBootPlayerId = when {
+            request.playerIsRight -> generalBet.goldenBootPlayerId
+            (tournamentBet?.goldenBootPlayerId ?: -1) >= 0  -> generalBet.goldenBootPlayerId
+            else -> -1
+        }
+        val result = TournamentResult(
+            tournamentId = tournamentId,
+            winningTeamId = winningTeamId,
+            goldenBootPlayerId = goldenBootPlayerId,
+        )
+        if (tournamentBet != null) {
+            result.setNew()
+        }
+        tournamentResultRepository.save(result)
+        // TODO resolve all bets
     }
 }
 
-//data class ResolveGeneralBet(
-//    val playerIsRight { get; set; }
-//
-//    public Boolean TeamIsRight { get; set; }
-//}
+data class ResolveGeneralBetRequest(
+    val playerIsRight: Boolean,
+    val teamIsRight: Boolean,
+)
 data class ViewGeneralBet(
     val generalBetId: Int,
     val goldenBootPlayerId: Int,
