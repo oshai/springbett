@@ -15,6 +15,7 @@ create table if not exists team
 (
     team_id   serial primary key,
     name varchar(255) not null,
+    ratio decimal not null,
     short_name varchar(255) not null unique
 ) ;
 
@@ -22,6 +23,7 @@ create table if not exists player
 (
     player_id   serial primary key,
     name varchar(255) not null,
+    ratio decimal not null,
     short_name varchar(255) not null unique
 ) ;
 

@@ -539,17 +539,18 @@ class GeneralBetService(
         return closeTimeZoned.isAfter(ZonedDateTime.now())
     }
 
+    @Synchronized
     fun resolveBet(generalBetId: Int, request: ResolveGeneralBetRequest) {
         val generalBet = getOne(generalBetId)
-        val tournamentBet = tournamentResultRepository.findById(tournamentId).orElseGet { null }
+        val tournamentResult = tournamentResultRepository.findById(tournamentId).orElseGet { null }
         val winningTeamId = when {
             request.teamIsRight -> generalBet.winningTeamId
-            (tournamentBet?.winningTeamId ?: -1) >= 0  -> generalBet.winningTeamId
+            (tournamentResult?.winningTeamId ?: -1) >= 0  -> generalBet.winningTeamId
             else -> -1
         }
         val goldenBootPlayerId = when {
             request.playerIsRight -> generalBet.goldenBootPlayerId
-            (tournamentBet?.goldenBootPlayerId ?: -1) >= 0  -> generalBet.goldenBootPlayerId
+            (tournamentResult?.goldenBootPlayerId ?: -1) >= 0  -> generalBet.goldenBootPlayerId
             else -> -1
         }
         val result = TournamentResult(
@@ -557,11 +558,26 @@ class GeneralBetService(
             winningTeamId = winningTeamId,
             goldenBootPlayerId = goldenBootPlayerId,
         )
-        if (tournamentBet != null) {
+        if (tournamentResult != null) {
             result.setNew()
         }
         tournamentResultRepository.save(result)
-        // TODO resolve all bets
+        if (goldenBootPlayerId > -1 && winningTeamId > -1) {
+            resolveAllBets(result)
+        }
+    }
+
+    private fun resolveAllBets(tournamentResult: TournamentResult) {
+        getAll().forEach { generalBet ->
+            var points = 0
+            if (generalBet.goldenBootPlayerId == tournamentResult.goldenBootPlayerId) {
+                points += 1 // TODO ratio
+            }
+            if (generalBet.winningTeamId == tournamentResult.winningTeamId) {
+                points += 1 // TODO ratio
+            }
+            // TODO save
+        }
     }
 }
 

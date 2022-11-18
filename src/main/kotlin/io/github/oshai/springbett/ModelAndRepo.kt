@@ -7,8 +7,6 @@ import org.springframework.data.repository.CrudRepository
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
 
 interface StadiumRepository : CrudRepository<Stadium, Int>
 
@@ -27,7 +25,9 @@ interface TeamRepository : CrudRepository<Team, Int>
 
 @Table("team")
 data class Team(
-    val name: String, val shortName: String,
+    val name: String,
+    val shortName: String,
+    val ratio: BigDecimal,
     @Id val teamId: Int? = null,
 ) {
     fun id() = teamId!!
@@ -148,7 +148,12 @@ data class TournamentResult(
 interface PlayerRepository : CrudRepository<Player, Int>
 
 @Table("player")
-data class Player(val name: String, val shortName: String, @Id val playerId: Int? = null) {
+data class Player(
+    val name: String,
+    val shortName: String,
+    val ratio: BigDecimal,
+    @Id val playerId: Int? = null,
+) {
     fun id() = playerId!!
 }
 
