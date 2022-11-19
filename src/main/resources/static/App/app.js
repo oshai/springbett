@@ -80,6 +80,15 @@
                     }]
                 }
             }).
+            when('/players', {
+                            templateUrl: 'App/Players/Players.html',
+                            controller: 'PlayersCtrl',
+                            resolve: {
+                                players: ['PlayersManager', function (PlayersManager) {
+                                    return PlayersManager.loadAllPlayers();
+                                }]
+                            }
+                        }).
             when('/teams/:teamId', {
                 templateUrl: 'App/Teams/Team.html',
                 controller: 'TeamCtrl',

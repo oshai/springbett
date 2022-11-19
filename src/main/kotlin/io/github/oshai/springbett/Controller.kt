@@ -26,6 +26,7 @@ class RedirectController {
         "/bets_center",
         "/games/**",
         "/teams/**",
+        "/players/**",
         "/stadiums/**",
         "/users/**",
         "/login",
