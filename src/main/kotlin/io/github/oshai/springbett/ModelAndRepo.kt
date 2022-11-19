@@ -27,6 +27,8 @@ interface TeamRepository : CrudRepository<Team, Int>
 data class Team(
     val name: String,
     val shortName: String,
+    val logo: String,
+    val flag: String,
     val ratio: BigDecimal,
     @Id val teamId: Int? = null,
 ) {
