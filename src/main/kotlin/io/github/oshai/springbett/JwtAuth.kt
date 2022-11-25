@@ -6,6 +6,10 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -44,10 +48,6 @@ import java.io.Serializable
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.function.Function
-import javax.servlet.FilterChain
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 import kotlin.collections.HashMap
 
 // based on https://www.javainuse.com/spring/boot-jwt
@@ -64,12 +64,12 @@ class SecurityConfig(
     @Bean
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/api/account/externalLogins").permitAll()
-            .antMatchers("/api/account/userInfo").permitAll()
-            .antMatchers("/api/account/logout").permitAll()
-            .antMatchers("/api/account/register").permitAll()
-            .antMatchers("/api/**").authenticated()
+            .authorizeHttpRequests()
+            .requestMatchers("/api/account/externalLogins").permitAll()
+            .requestMatchers("/api/account/userInfo").permitAll()
+            .requestMatchers("/api/account/logout").permitAll()
+            .requestMatchers("/api/account/register").permitAll()
+            .requestMatchers("/api/**").authenticated()
             .anyRequest().permitAll() // all other requests shouldn't be authenticated
             .and().exceptionHandling() // make sure we use stateless session; session won't be used to
             // store user's state.

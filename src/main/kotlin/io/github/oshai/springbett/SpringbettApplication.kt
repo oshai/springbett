@@ -1,12 +1,12 @@
 package io.github.oshai.springbett
 
+import jakarta.annotation.PostConstruct
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
-import javax.annotation.PostConstruct
 
 private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
